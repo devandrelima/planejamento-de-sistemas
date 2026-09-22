@@ -7,7 +7,7 @@
 > "leia `references/x.md`" ou "modelo em `assets/y.md`", role até a seção correspondente deste
 > arquivo — os títulos de nível 1 marcam cada um.
 >
-> Gerado em 2026-09-21.
+> Gerado em 2026-09-22.
 
 ---
 
