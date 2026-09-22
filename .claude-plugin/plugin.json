@@ -1,0 +1,6 @@
+{
+  "name": "planejamento-de-sistemas",
+  "description": "Planeja qualquer sistema como especificação executável: entrevista em blocos, decisões fechadas, prompts numerados com TDD por bloco e protocolo de continuidade entre sessões.",
+  "version": "1.0.0",
+  "author": { "name": "André Lima" }
+}

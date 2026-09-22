@@ -1,0 +1,29 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    paths: ['skills/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gerar dist/
+        run: ./build.sh
+      - name: Commitar se algo mudou
+        run: |
+          if [ -n "$(git status --porcelain dist)" ]; then
+            git config user.name  'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add dist
+            git commit -m 'chore: regenerar dist a partir da skill'
+            git push
+          else
+            echo 'dist/ já está atualizado'
+          fi

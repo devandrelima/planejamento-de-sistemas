@@ -1,0 +1,13 @@
+{
+  "name": "planejamento-de-sistemas",
+  "owner": {
+    "name": "André Lima"
+  },
+  "plugins": [
+    {
+      "name": "planejamento-de-sistemas",
+      "source": "./",
+      "description": "Transforma uma ideia de sistema numa pasta de especificação executável — entrevista, decisões, prompts numerados prontos para uma IA construir, com TDD por bloco e continuidade entre sessões."
+    }
+  ]
+}
