@@ -49,6 +49,26 @@ git: commit encontrado + entregas presentes + suíte verde → marca concluído 
 → termina o anterior antes; nada encontrado → para e avisa. O `ESTADO.md` entra no **mesmo commit**
 do trabalho, então "o commit existe" e "o estado está atualizado" são o mesmo fato.
 
+## Modo MVP e validação local
+
+A skill também pergunta sobre prazo, equipe, orçamento, dependências e critério mínimo de entrega. Se o objetivo for um MVP, separa o que é indispensável agora do que fica para depois, sem eliminar testes essenciais.
+
+O validador estrutural é escrito apenas com a biblioteca padrão do Python. Ele detecta referências inválidas, ausência de arquivos essenciais, índices inconsistentes, dependências circulares, decisões D1/D2 indefinidas e prompts sem aceite. Avisos sobre qualidade documental não substituem análise humana.
+
+Execute na raiz do repositório:
+
+```bash
+python3 skills/planejamento-de-sistemas/scripts/validar.py examples/caixafuturo/especificacao
+python3 skills/planejamento-de-sistemas/scripts/validar.py examples/caixafuturo/especificacao --json
+python3 -m unittest discover -s tests -v
+./build.sh
+unzip -t dist/planejamento-de-sistemas.skill
+```
+
+A demonstração reproduzível fica em [examples/caixafuturo](examples/caixafuturo/README.md). Ela mostra o planejamento, não uma versão implementada do aplicativo.
+
+**Limitações:** o validador não verifica correção semântica, qualidade de código ou produtividade. Para usar com uma instalação local da skill, ajuste o caminho do script; ele aceita qualquer pasta de especificação como argumento. Ações específicas do Claude Code, como revisões por slash commands, precisam ser substituídas por revisão equivalente no Codex ou em outro agente.
+
 ## Como usar
 
 ### Claude Code — como plugin (recomendado)
@@ -103,7 +123,14 @@ arquivos concatenados na ordem de leitura:
 | `skills/planejamento-de-sistemas/references/` | Entrevista, estrutura do conjunto, documento 00, continuidade entre sessões, testes, anatomia do prompt, sistema existente, checklist de revisão |
 | `skills/planejamento-de-sistemas/assets/` | Modelos prontos de cada tipo de documento |
 | `dist/` | Artefatos gerados: pacote `.skill` e versão de arquivo único |
-| `build.sh` | Regera `dist/` (roda sozinho no CI a cada push em `skills/`) |
+| `build.sh` | Regera `dist/` (workflow exclusivo de distribuição a cada push em `skills/`) |
+| `skills/planejamento-de-sistemas/scripts/validar.py` | Validador estrutural local de especificações |
+| `tests/` | Testes automatizados do validador |
+| `examples/caixafuturo/` | Especificação demonstrativa de MVP, sem código do aplicativo |
+
+## Contribuir
+
+Abra uma issue com o cenário que falhou e um exemplo mínimo, preferencialmente sem dados privados. Inclua teste de regressão ao alterar o validador. Rode os testes, o validador no exemplo e `./build.sh` antes de propor alterações. O workflow `validar.yml` verifica os testes e pacotes; o `build.yml` é o único responsável por atualizar os arquivos em `dist/`.
 
 ## Licença
 
