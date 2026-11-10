@@ -7,7 +7,7 @@
 > "leia `references/x.md`" ou "modelo em `assets/y.md`", role até a seção correspondente deste
 > arquivo — os títulos de nível 1 marcam cada um.
 >
-> Gerado em 2026-09-22.
+> Gerado automaticamente a partir dos arquivos-fonte (sem data variável).
 
 ---
 
@@ -97,7 +97,9 @@ na primeira sessão.
 Leia `references/entrevista.md`: banco de perguntas por bloco, o que inferir sem perguntar e como
 propor padrões.
 
-Conduza **em rodadas temáticas**, não numa lista única. Use `AskUserQuestion` com 2 a 4 perguntas
+Antes de começar, identifique explicitamente se o objetivo é **MVP** ou **projeto completo**, o prazo, os recursos disponíveis, a experiência da equipe, a demonstração mínima e o que ficará para depois. Em prazo curto, leia `references/planejamento-mvp.md` e proponha o menor recorte seguro.
+
+Conduza **em rodadas temáticas**, não numa lista única. Quando a ferramenta oferecer `AskUserQuestion`, use-a com 2 a 4 perguntas
 por rodada, sempre com uma opção recomendada primeiro e o motivo na descrição — decidir entre
 alternativas explicadas é muito mais rápido, para o usuário, do que redigir requisitos do zero. Use
 pergunta aberta quando a resposta for um nome, uma lista ou uma quantidade.
@@ -120,7 +122,7 @@ corrigir um resumo de trinta linhas que uma pasta de quinze arquivos.
 
 ### Fase 2 — Plano do conjunto
 
-Com o escopo fechado, decida **quais documentos existem e em que ordem**, usando
+Com o escopo fechado, e após aplicar `references/planejamento-mvp.md` quando pertinente, decida **quais documentos existem e em que ordem**, usando
 `references/estrutura-do-conjunto.md` (como fatiar em prompts, a sequência típica, a tabela de
 dependências, quando criar contrato e manual separados).
 
@@ -145,6 +147,8 @@ Escreva cada arquivo inteiro de uma vez e siga em frente; não peça aprovação
 Ao final de cada um, uma linha dizendo o que entregou e qual é o próximo.
 
 ### Fase 4 — Revisão e entrega
+
+Execute `python3 skills/planejamento-de-sistemas/scripts/validar.py docs/especificacao` no repositório que contém a skill; quando instalada em outro local, use o caminho real de `scripts/validar.py` e informe a pasta da especificação. Corrija erros objetivos; avalie os avisos (heurísticos) um a um, sem fingir validação semântica. Se Python não estiver disponível, registre que a validação automática não foi executada.
 
 Passe o conjunto pela lista de `references/qualidade.md` — ela pega o que costuma faltar (prompt sem
 critério de aceite, invariante não verificável, termo usado e não definido, dependência circular).
@@ -171,14 +175,14 @@ mãos (contas, credenciais, cadastros externos), as decisões pendentes e os ris
 - **Riscos ditos na cara.** Se a arquitetura escolhida tem um ponto único de falha, um custo que
   escala mal ou um acoplamento incômodo, escreva isso no documento em uma frase. O usuário decidiu
   com essa informação; sem ela, decidiu no escuro.
-- **Tamanho é consequência, não meta.** Um prompt costuma ficar entre 200 e 600 linhas. Muito menos
-  que isso normalmente é falta de especificação; muito mais é uma sessão que não vai caber e pede
-  divisão.
+- **Tamanho é consequência, não meta.** Escreva apenas o necessário para produzir uma entrega verificável. Divida prompts grandes; não crie camadas artificiais ou dezenas de sessões para um MVP.
 
 ## Arquivos desta skill
 
 | Arquivo | Leia quando |
 |---|---|
+| `references/planejamento-mvp.md` | Fase 1/2 — recorte por prazo, recursos, riscos e entrega mínima |
+| `scripts/validar.py` | Fase 4 — verificador estrutural local, sem APIs |
 | `references/entrevista.md` | Fase 1 — banco de perguntas por bloco e padrões a propor |
 | `references/estrutura-do-conjunto.md` | Fase 2 — como fatiar o sistema em prompts e montar o índice |
 | `references/documento-00.md` | Fase 3 — seção a seção do documento de visão geral |
@@ -235,6 +239,10 @@ Define o formato do conjunto inteiro; faça primeiro.
 - Onde a especificação deve ser gravada e em qual caminho ela vai viver no repositório final (padrão:
   `docs/especificacao/`, porque os arquivos se citam por esse caminho).
 - Existe prazo, entrega parcial obrigatória ou dependência externa com data?
+
+### Modo MVP — quando houver restrição de prazo ou orçamento
+
+Antes de detalhar todos os blocos, registre: prazo real, horas disponíveis, equipe e experiência, orçamento, dependências, funcionalidades essenciais/desejáveis, riscos e critério mínimo demonstrável. Classifique **agora / depois / não construir**. Leia `planejamento-mvp.md`. Um MVP não precisa de todas as camadas da sequência padrão, mas continua exigindo testes e segurança proporcionais ao risco.
 
 ## Bloco 1 — Produto e propósito
 
@@ -412,6 +420,59 @@ Confirmado o resumo, ele vira o documento 00 quase literalmente.
 ---
 
 
+<!-- ═══ references/planejamento-mvp.md ═══ -->
+
+# ARQUIVO: references/planejamento-mvp.md
+
+# Planejamento orientado a MVP
+
+Use esta referência antes de fatiar a implementação quando houver prazo, equipe ou orçamento limitados.
+
+## Contrato de viabilidade
+
+Registre no documento 00, de forma explícita:
+
+| Campo | Pergunta a responder |
+|---|---|
+| Modo | MVP com entrega verificável ou projeto completo? |
+| Prazo | Data de entrega, capacidade em horas e margem de segurança |
+| Pessoas | Quantidade, experiência com stack e disponibilidade |
+| Recursos | Orçamento, infraestrutura, ferramentas e limites de APIs |
+| Essenciais | Fluxos sem os quais não existe entrega utilizável |
+| Desejáveis | Melhorias adiáveis, com prioridade |
+| Excluídos | Não construir agora, mesmo que pareçam úteis |
+| Dependências | Credenciais, aprovações, fontes de dados e terceiros |
+| Riscos | Incerteza, gargalo, integração e mitigação |
+| Critério de entrega | Testes, demonstração e resultado observável mínimos |
+
+Não confundir MVP com protótipo inseguro: integridade dos dados, isolamento, privacidade e testes de fluxos críticos continuam obrigatórios quando aplicáveis.
+
+## Algoritmo de recorte
+
+1. Escreva o fluxo de valor ponta a ponta em uma frase que possa ser demonstrada.
+2. Separe cada capacidade em **indispensável**, **desejável** ou **posterior**. Só a primeira entra no MVP.
+3. Identifique dependências e riscos de cada indispensável; se uma dependência não couber no prazo, substitua o fluxo por alternativa segura, ou declare a entrega inviável.
+4. Estime por faixa, não por falsa precisão: pequeno, médio, grande. Reserve tempo para testes e integração.
+5. Prefira o menor número de prompts que termine com entrega verificável. Não crie automaticamente as camadas da "sequência típica".
+6. Pare de acrescentar prompts quando o critério mínimo de entrega já estiver coberto. Registre o restante como evolução, não como tarefa parcialmente executada.
+7. Se a previsão ultrapassar prazo/capacidade, renegocie escopo ou prazo com o usuário antes de declarar plano viável.
+
+## Casos particulares
+
+- Projeto offline sem usuários remotos: não invente login, OAuth, filas, nuvem ou deploy.
+- Projeto local sem banco: não imponha containers, migrations ou testes de banco inexistente.
+- Números financeiros: testes de precisão, entradas inválidas e fronteiras não são opcionais.
+- Testes: defina comandos reais e piso mensurável quando houver ferramenta configurada. Não afirme medição de cobertura sem executá-la.
+- Segurança: analise superfícies existentes; ausência de requisito não significa licença para vazar dados.
+
+## Saída obrigatória
+
+No documento 00, inclua tabela **Agora / Depois / Não construir**, restrições de entrega, riscos e uma demonstração mínima com critérios verificáveis. No índice, cada prompt deve acrescentar valor observável ao MVP. A revisão final deve rejeitar ambição que não cabe no prazo, mesmo com todos os documentos formalmente corretos.
+
+
+---
+
+
 <!-- ═══ references/estrutura-do-conjunto.md ═══ -->
 
 # ARQUIVO: references/estrutura-do-conjunto.md
@@ -449,6 +510,10 @@ Cortes que funcionam, em ordem de preferência: **por camada** (fundação → d
 interface → operação), depois **por fluxo** (envio, recebimento, conciliação), depois **por
 superfície** (API pública, API interna, telas). Corte ruim: por entidade do banco — espalha a mesma
 camada por dez sessões e cada uma reinventa a estrutura.
+
+## Recorte MVP (antes da sequência típica)
+
+A sequência abaixo é um repertório, **não um checklist obrigatório**. Para MVP, faça o fluxo mínimo utilizável caber em sessões pequenas com testes e aceite real. Registre explicitamente no 00 o que vai agora, o que é evolução e o que não será construído. Se o prazo não comportar o fluxo, declare inviabilidade e renegocie o recorte. Ver `planejamento-mvp.md`.
 
 ## Sequência típica — sistema novo
 
@@ -1247,6 +1312,13 @@ Continua sendo o contrato entre os prompts, mas ganha duas seções e perde peso
 Passe por esta lista antes de entregar. Ela é feita do que costuma faltar — e o custo de cada falha
 é uma sessão de obra desperdiçada, não um comentário de revisão.
 
+## Modo MVP e validação automatizada
+
+- [ ] Prazo, equipe, custos, dependências, risco e critério mínimo demonstrável registrados.
+- [ ] Funcionalidades classificadas como agora, depois ou não construir; nenhuma camada artificial no MVP.
+- [ ] `python3 skills/planejamento-de-sistemas/scripts/validar.py docs/especificacao` foi executado, com resultado anotado (ou indisponibilidade declarada).
+- [ ] Erros objetivos corrigidos, avisos heurísticos revisados. Este validador não certifica qualidade semântica.
+
 ## Coerência do conjunto
 
 - [ ] Todo arquivo citado existe, e nenhum arquivo cita algo de fora da pasta (nem a conversa, nem
@@ -1368,6 +1440,23 @@ Cada ponto encontrado vira uma linha de tabela ou um critério de aceite.
 
 - <Funcionalidade que não existe> — <quem faz isso em vez do sistema, ou por que não existe>
 - <Funcionalidade quase-escopo que um implementador construiria sozinho>
+
+---
+
+### 1.2 Modo de entrega: MVP ou completo
+
+| Restrição | Valor decidido |
+|---|---|
+| Modo, prazo e capacidade disponível | <preencher> |
+| Equipe, experiência e recursos financeiros | <preencher> |
+| Dependências externas e riscos de atraso | <preencher> |
+| Critério mínimo demonstrável de entrega | <preencher> |
+
+| Agora (indispensável) | Depois (desejável) | Não construir |
+|---|---|---|
+| <fluxo verificável> | <evolução priorizada> | <exclusão consciente> |
+
+Não eliminar testes essenciais, proteção de dados ou integridade para cumprir prazo. Se o recorte não couber, sinalize a inviabilidade.
 
 ---
 
