@@ -214,7 +214,7 @@ Onze blocos. Não são um formulário: são o que precisa estar respondido antes
 existir. Percorra na ordem, pulando o que não se aplica e o que você já conseguiu ler em vez de
 perguntar.
 
-**Ritmo:** 2 a 4 perguntas por rodada, com `AskUserQuestion` sempre que houver alternativas — opção
+**Ritmo:** 2 a 4 perguntas por rodada, com `AskUserQuestion` quando disponível; nas demais ferramentas, apresente opções curtas em texto sempre que houver alternativas — opção
 recomendada primeiro, com o motivo na descrição. Pergunta aberta só quando a resposta é um nome, uma
 lista ou um número. Depois de cada bloco, uma frase confirmando o que você entendeu; ao final de
 tudo, o resumo completo para aprovação.
@@ -1680,7 +1680,7 @@ honestas.>
 > **Como usar:** sessão nova na raiz do `<repositório>`. Pré-requisito: prompt <NN-1> concluído.
 > Leia `docs/especificacao/00_visao_geral_e_decisoes.md` e este arquivo.
 >
-> **Revisões:** `/code-review` ao final. <`/security-review` também, quando houver segredo,
+> **Revisões:** `/code-review` ao final quando disponível; em outros agentes, faça revisão explícita equivalente de código. <`/security-review` ou revisão de segurança equivalente quando houver segredo,
 > autenticação, pagamento ou dado pessoal.>
 
 ---
@@ -1947,7 +1947,7 @@ especificação.
   o que falta e onde parou, commitado antes de encerrar.
 - **Um prompt por vez.** Para cada um: leia o arquivo inteiro → siga a "Ordem de trabalho" dele,
   bloco a bloco → confira **todos** os critérios de aceite → rode `<comando de verificação>` → rode
-  `/code-review` (e `/security-review` quando o arquivo pedir) → corrija → faça o commit indicado no
+  `/code-review` (e `/security-review` quando o arquivo pedir), ou revisões equivalentes quando indisponíveis → corrija → faça o commit indicado no
   próprio arquivo → atualize o `ESTADO.md`.
 - **Testes primeiro, sempre.** Em cada bloco: rode a suíte completa e anote a linha de base; escreva
   os testes daquele bloco e veja-os falhar pelo motivo certo; implemente o mínimo para passar; rode
