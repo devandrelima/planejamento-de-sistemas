@@ -1617,6 +1617,16 @@ Cada arquivo é autossuficiente ou aponta para outro arquivo **desta mesma pasta
 
 ---
 
+## Viabilidade e escopo de entrega
+
+| Modo | Prazo e recursos | Entrega mínima |
+|---|---|---|
+| <MVP ou completo> | <horas, orçamento, equipe> | <fluxo demonstrável e testes> |
+
+| Agora | Depois | Não construir |
+|---|---|---|
+| <indispensável> | <desejável> | <excluído> |
+
 ## Como usar
 
 1. <Criar/clonar o repositório.>
