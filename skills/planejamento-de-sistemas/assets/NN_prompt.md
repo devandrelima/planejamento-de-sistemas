@@ -3,7 +3,7 @@
 > **Como usar:** sessão nova na raiz do `<repositório>`. Pré-requisito: prompt <NN-1> concluído.
 > Leia `docs/especificacao/00_visao_geral_e_decisoes.md` e este arquivo.
 >
-> **Revisões:** `/code-review` ao final. <`/security-review` também, quando houver segredo,
+> **Revisões:** `/code-review` ao final quando disponível; em outros agentes, faça revisão explícita equivalente de código. <`/security-review` ou revisão de segurança equivalente quando houver segredo,
 > autenticação, pagamento ou dado pessoal.>
 
 ---

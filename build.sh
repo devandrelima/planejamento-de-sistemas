@@ -5,8 +5,20 @@ cd "$(dirname "$0")"
 SKILL=skills/planejamento-de-sistemas
 mkdir -p dist
 
-rm -f dist/planejamento-de-sistemas.skill
-(cd skills && zip -r -q ../dist/planejamento-de-sistemas.skill planejamento-de-sistemas -x '*.DS_Store')
+# Arquivo ZIP reprodutível: ordem, timestamps e permissões fixas; sem cache Python.
+python3 - "$SKILL" <<'PYZIP'
+import pathlib, sys, zipfile
+base = pathlib.Path(sys.argv[1])
+with zipfile.ZipFile('dist/planejamento-de-sistemas.skill', 'w') as z:
+    for file in sorted(base.rglob('*')):
+        if not file.is_file() or '__pycache__' in file.parts or file.suffix in {'.pyc', '.pyo'} or file.name == '.DS_Store':
+            continue
+        name = pathlib.Path('planejamento-de-sistemas') / file.relative_to(base)
+        info = zipfile.ZipInfo(name.as_posix(), date_time=(1980, 1, 1, 0, 0, 0))
+        info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = (0o100644 << 16)
+        z.writestr(info, file.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+PYZIP
 
 python3 - "$SKILL" <<'PY'
 import pathlib, sys

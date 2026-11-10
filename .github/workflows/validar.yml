@@ -23,7 +23,14 @@ jobs:
         run: python3 skills/planejamento-de-sistemas/scripts/validar.py examples/caixafuturo/especificacao --strict
       - name: Build da distribuição
         run: ./build.sh
-      - name: Verificar integridade dos pacotes
+      - name: Verificar integridade e reprodutibilidade
         run: |
           unzip -t dist/planejamento-de-sistemas.skill
           grep -q 'ARQUIVO: references/planejamento-mvp.md' dist/planejamento-de-sistemas-completo.md
+          if unzip -Z1 dist/planejamento-de-sistemas.skill | grep -E '(__pycache__/|\\.pyc$|\\.pyo$)'; then
+            echo 'Cache Python detectado no pacote' >&2
+            exit 1
+          fi
+          sha256sum dist/planejamento-de-sistemas.skill dist/planejamento-de-sistemas-completo.md > /tmp/dist-sha256
+          ./build.sh
+          sha256sum -c /tmp/dist-sha256

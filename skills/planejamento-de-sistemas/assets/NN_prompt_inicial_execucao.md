@@ -43,7 +43,7 @@ especificação.
   o que falta e onde parou, commitado antes de encerrar.
 - **Um prompt por vez.** Para cada um: leia o arquivo inteiro → siga a "Ordem de trabalho" dele,
   bloco a bloco → confira **todos** os critérios de aceite → rode `<comando de verificação>` → rode
-  `/code-review` (e `/security-review` quando o arquivo pedir) → corrija → faça o commit indicado no
+  `/code-review` (e `/security-review` quando o arquivo pedir), ou revisões equivalentes quando indisponíveis → corrija → faça o commit indicado no
   próprio arquivo → atualize o `ESTADO.md`.
 - **Testes primeiro, sempre.** Em cada bloco: rode a suíte completa e anote a linha de base; escreva
   os testes daquele bloco e veja-os falhar pelo motivo certo; implemente o mínimo para passar; rode

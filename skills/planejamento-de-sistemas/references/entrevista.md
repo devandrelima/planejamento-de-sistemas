@@ -4,7 +4,7 @@ Onze blocos. Não são um formulário: são o que precisa estar respondido antes
 existir. Percorra na ordem, pulando o que não se aplica e o que você já conseguiu ler em vez de
 perguntar.
 
-**Ritmo:** 2 a 4 perguntas por rodada, com `AskUserQuestion` sempre que houver alternativas — opção
+**Ritmo:** 2 a 4 perguntas por rodada, com `AskUserQuestion` quando disponível; nas demais ferramentas, apresente opções curtas em texto sempre que houver alternativas — opção
 recomendada primeiro, com o motivo na descrição. Pergunta aberta só quando a resposta é um nome, uma
 lista ou um número. Depois de cada bloco, uma frase confirmando o que você entendeu; ao final de
 tudo, o resumo completo para aprovação.

@@ -96,7 +96,7 @@ Configurações → Capacidades → Skills. (É um zip comum; se a interface ped
 ### ChatGPT, Gemini, Cursor e outras
 
 Use a versão de arquivo único —
-[`dist/planejamento-de-sistemas-completo.md`](dist/planejamento-de-sistemas-completo.md), com os 17
+[`dist/planejamento-de-sistemas-completo.md`](dist/planejamento-de-sistemas-completo.md), com os 18
 arquivos concatenados na ordem de leitura:
 
 - **ChatGPT Projects / Gemini Gems / Claude Projects:** anexe o arquivo à base de conhecimento e
@@ -128,9 +128,13 @@ arquivos concatenados na ordem de leitura:
 | `tests/` | Testes automatizados do validador |
 | `examples/caixafuturo/` | Especificação demonstrativa de MVP, sem código do aplicativo |
 
+## Avaliar a qualidade dos planos
+
+A metodologia de avaliação com casos fixos e critérios comparáveis está em [docs/avaliacao.md](docs/avaliacao.md). Ela separa verificações estruturais da revisão humana e não atribui ganhos de produtividade sem experimentos.
+
 ## Contribuir
 
-Abra uma issue com o cenário que falhou e um exemplo mínimo, preferencialmente sem dados privados. Inclua teste de regressão ao alterar o validador. Rode os testes, o validador no exemplo e `./build.sh` antes de propor alterações. O workflow `validar.yml` verifica os testes e pacotes; o `build.yml` é o único responsável por atualizar os arquivos em `dist/`.
+Abra uma issue com o cenário que falhou e um exemplo mínimo, preferencialmente sem dados privados. Inclua teste de regressão ao alterar o validador. Rode os testes, o validador no exemplo e `./build.sh` antes de propor alterações. O workflow `validar.yml` verifica testes, exemplo, integridade e reprodutibilidade dos pacotes; o `build.yml` é o único responsável por atualizar os arquivos em `dist/`.
 
 ## Licença
 
