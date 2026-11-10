@@ -19,6 +19,23 @@
 
 ---
 
+### 1.2 Modo de entrega: MVP ou completo
+
+| Restrição | Valor decidido |
+|---|---|
+| Modo, prazo e capacidade disponível | <preencher> |
+| Equipe, experiência e recursos financeiros | <preencher> |
+| Dependências externas e riscos de atraso | <preencher> |
+| Critério mínimo demonstrável de entrega | <preencher> |
+
+| Agora (indispensável) | Depois (desejável) | Não construir |
+|---|---|---|
+| <fluxo verificável> | <evolução priorizada> | <exclusão consciente> |
+
+Não eliminar testes essenciais, proteção de dados ou integridade para cumprir prazo. Se o recorte não couber, sinalize a inviabilidade.
+
+---
+
 ## 2. Atores
 
 | Ator | Como interage |

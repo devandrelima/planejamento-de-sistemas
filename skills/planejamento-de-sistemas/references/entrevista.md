@@ -30,6 +30,10 @@ Define o formato do conjunto inteiro; faça primeiro.
   `docs/especificacao/`, porque os arquivos se citam por esse caminho).
 - Existe prazo, entrega parcial obrigatória ou dependência externa com data?
 
+### Modo MVP — quando houver restrição de prazo ou orçamento
+
+Antes de detalhar todos os blocos, registre: prazo real, horas disponíveis, equipe e experiência, orçamento, dependências, funcionalidades essenciais/desejáveis, riscos e critério mínimo demonstrável. Classifique **agora / depois / não construir**. Leia `planejamento-mvp.md`. Um MVP não precisa de todas as camadas da sequência padrão, mas continua exigindo testes e segurança proporcionais ao risco.
+
 ## Bloco 1 — Produto e propósito
 
 - O que o sistema é, em uma frase, para alguém que nunca ouviu falar dele.

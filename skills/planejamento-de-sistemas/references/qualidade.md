@@ -3,6 +3,13 @@
 Passe por esta lista antes de entregar. Ela é feita do que costuma faltar — e o custo de cada falha
 é uma sessão de obra desperdiçada, não um comentário de revisão.
 
+## Modo MVP e validação automatizada
+
+- [ ] Prazo, equipe, custos, dependências, risco e critério mínimo demonstrável registrados.
+- [ ] Funcionalidades classificadas como agora, depois ou não construir; nenhuma camada artificial no MVP.
+- [ ] `python3 skills/planejamento-de-sistemas/scripts/validar.py docs/especificacao` foi executado, com resultado anotado (ou indisponibilidade declarada).
+- [ ] Erros objetivos corrigidos, avisos heurísticos revisados. Este validador não certifica qualidade semântica.
+
 ## Coerência do conjunto
 
 - [ ] Todo arquivo citado existe, e nenhum arquivo cita algo de fora da pasta (nem a conversa, nem

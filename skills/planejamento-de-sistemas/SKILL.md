@@ -84,7 +84,9 @@ na primeira sessão.
 Leia `references/entrevista.md`: banco de perguntas por bloco, o que inferir sem perguntar e como
 propor padrões.
 
-Conduza **em rodadas temáticas**, não numa lista única. Use `AskUserQuestion` com 2 a 4 perguntas
+Antes de começar, identifique explicitamente se o objetivo é **MVP** ou **projeto completo**, o prazo, os recursos disponíveis, a experiência da equipe, a demonstração mínima e o que ficará para depois. Em prazo curto, leia `references/planejamento-mvp.md` e proponha o menor recorte seguro.
+
+Conduza **em rodadas temáticas**, não numa lista única. Quando a ferramenta oferecer `AskUserQuestion`, use-a com 2 a 4 perguntas
 por rodada, sempre com uma opção recomendada primeiro e o motivo na descrição — decidir entre
 alternativas explicadas é muito mais rápido, para o usuário, do que redigir requisitos do zero. Use
 pergunta aberta quando a resposta for um nome, uma lista ou uma quantidade.
@@ -107,7 +109,7 @@ corrigir um resumo de trinta linhas que uma pasta de quinze arquivos.
 
 ### Fase 2 — Plano do conjunto
 
-Com o escopo fechado, decida **quais documentos existem e em que ordem**, usando
+Com o escopo fechado, e após aplicar `references/planejamento-mvp.md` quando pertinente, decida **quais documentos existem e em que ordem**, usando
 `references/estrutura-do-conjunto.md` (como fatiar em prompts, a sequência típica, a tabela de
 dependências, quando criar contrato e manual separados).
 
@@ -132,6 +134,8 @@ Escreva cada arquivo inteiro de uma vez e siga em frente; não peça aprovação
 Ao final de cada um, uma linha dizendo o que entregou e qual é o próximo.
 
 ### Fase 4 — Revisão e entrega
+
+Execute `python3 skills/planejamento-de-sistemas/scripts/validar.py docs/especificacao` no repositório que contém a skill; quando instalada em outro local, use o caminho real de `scripts/validar.py` e informe a pasta da especificação. Corrija erros objetivos; avalie os avisos (heurísticos) um a um, sem fingir validação semântica. Se Python não estiver disponível, registre que a validação automática não foi executada.
 
 Passe o conjunto pela lista de `references/qualidade.md` — ela pega o que costuma faltar (prompt sem
 critério de aceite, invariante não verificável, termo usado e não definido, dependência circular).
@@ -158,14 +162,14 @@ mãos (contas, credenciais, cadastros externos), as decisões pendentes e os ris
 - **Riscos ditos na cara.** Se a arquitetura escolhida tem um ponto único de falha, um custo que
   escala mal ou um acoplamento incômodo, escreva isso no documento em uma frase. O usuário decidiu
   com essa informação; sem ela, decidiu no escuro.
-- **Tamanho é consequência, não meta.** Um prompt costuma ficar entre 200 e 600 linhas. Muito menos
-  que isso normalmente é falta de especificação; muito mais é uma sessão que não vai caber e pede
-  divisão.
+- **Tamanho é consequência, não meta.** Escreva apenas o necessário para produzir uma entrega verificável. Divida prompts grandes; não crie camadas artificiais ou dezenas de sessões para um MVP.
 
 ## Arquivos desta skill
 
 | Arquivo | Leia quando |
 |---|---|
+| `references/planejamento-mvp.md` | Fase 1/2 — recorte por prazo, recursos, riscos e entrega mínima |
+| `scripts/validar.py` | Fase 4 — verificador estrutural local, sem APIs |
 | `references/entrevista.md` | Fase 1 — banco de perguntas por bloco e padrões a propor |
 | `references/estrutura-do-conjunto.md` | Fase 2 — como fatiar o sistema em prompts e montar o índice |
 | `references/documento-00.md` | Fase 3 — seção a seção do documento de visão geral |

@@ -32,6 +32,10 @@ interface → operação), depois **por fluxo** (envio, recebimento, conciliaç�
 superfície** (API pública, API interna, telas). Corte ruim: por entidade do banco — espalha a mesma
 camada por dez sessões e cada uma reinventa a estrutura.
 
+## Recorte MVP (antes da sequência típica)
+
+A sequência abaixo é um repertório, **não um checklist obrigatório**. Para MVP, faça o fluxo mínimo utilizável caber em sessões pequenas com testes e aceite real. Registre explicitamente no 00 o que vai agora, o que é evolução e o que não será construído. Se o prazo não comportar o fluxo, declare inviabilidade e renegocie o recorte. Ver `planejamento-mvp.md`.
+
 ## Sequência típica — sistema novo
 
 Adapte; nem todo projeto tem todas as etapas, e a numeração deve refletir a ordem real de execução.

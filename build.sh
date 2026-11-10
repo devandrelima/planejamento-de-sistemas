@@ -9,10 +9,10 @@ rm -f dist/planejamento-de-sistemas.skill
 (cd skills && zip -r -q ../dist/planejamento-de-sistemas.skill planejamento-de-sistemas -x '*.DS_Store')
 
 python3 - "$SKILL" <<'PY'
-import pathlib, sys, datetime
+import pathlib, sys
 base = pathlib.Path(sys.argv[1])
 ordem = ['SKILL.md',
- 'references/entrevista.md','references/estrutura-do-conjunto.md','references/documento-00.md',
+ 'references/entrevista.md','references/planejamento-mvp.md','references/estrutura-do-conjunto.md','references/documento-00.md',
  'references/continuidade-entre-sessoes.md','references/testes.md','references/anatomia-do-prompt.md',
  'references/sistema-existente.md','references/qualidade.md',
  'assets/00_visao_geral_e_decisoes.md','assets/README_indice.md','assets/NN_prompt.md',
@@ -27,10 +27,10 @@ partes = ["""# Planejamento de sistemas — instruções completas
 > "leia `references/x.md`" ou "modelo em `assets/y.md`", role até a seção correspondente deste
 > arquivo — os títulos de nível 1 marcam cada um.
 >
-> Gerado em %s.
+> Gerado automaticamente a partir dos arquivos-fonte (sem data variável).
 
 ---
-""" % datetime.date.today().isoformat()]
+"""]
 for rel in ordem:
     txt = (base/rel).read_text()
     if rel == 'SKILL.md':
