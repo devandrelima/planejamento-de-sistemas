@@ -168,7 +168,10 @@ class FlowV2Tests(unittest.TestCase):
         self.assertEqual(self.project().ready()["gate"], "aguardando_avaliacao_humana")
         with self.assertRaisesRegex(flow.PlanError, "Cobertura"):
             self.project().review("aprovar", "Aceito", "testes afetados verdes", 79, "Fluxo visto")
-        self.project().review("aprovar", "Aceito", "testes afetados verdes", 84, "Fluxo visto")
+        with self.assertRaisesRegex(flow.PlanError, "Checkpoint"):
+            self.project().review("aprovar", "Aceito", "testes afetados verdes", 84, "Fluxo visto")
+        self.project().review("aprovar", "Aceito", "testes afetados verdes", 84, "Fluxo visto",
+                              "suíte completa verde", 88)
         self.assertEqual(self.project().ready()["gate"], "projeto_aprovado")
 
     def test_three_sprints_need_global_checkpoint(self):

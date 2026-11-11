@@ -370,7 +370,8 @@ class Project:
         if changed is None or not 80 <= changed <= 100:
             raise PlanError("Cobertura de código alterado deve ser medida e >= 80%")
         idx = next(i for i, item in enumerate(self.sprints) if item["id"] == sid) + 1
-        need_full = idx % self.plan["full_suite_every"] == 0 or sprint.get("requires_full_suite", False) or sprint.get("risk") == "critical"
+        need_full = (idx == len(self.sprints) or idx % self.plan["full_suite_every"] == 0
+                     or sprint.get("requires_full_suite", False) or sprint.get("risk") in ("high", "critical"))
         if need_full and (not full_suite.strip() or global_coverage is None or not 80 <= global_coverage <= 100):
             raise PlanError("Checkpoint exige suíte completa e cobertura global medida >= 80%")
         self.state["sprints"][sid] = {
