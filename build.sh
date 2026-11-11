@@ -24,12 +24,16 @@ python3 - "$SKILL" <<'PY'
 import pathlib, sys
 base = pathlib.Path(sys.argv[1])
 ordem = ['SKILL.md',
+ 'references/fluxo-v2.md','references/contexto-v2.md','references/testes-progressivos.md',
+ 'references/paralelismo-v2.md','references/design-adaptativo.md','references/fluxo-v1.md',
  'references/entrevista.md','references/planejamento-mvp.md','references/estrutura-do-conjunto.md','references/documento-00.md',
  'references/continuidade-entre-sessoes.md','references/testes.md','references/anatomia-do-prompt.md',
  'references/sistema-existente.md','references/qualidade.md',
  'assets/00_visao_geral_e_decisoes.md','assets/README_indice.md','assets/NN_prompt.md',
  'assets/NN_contrato.md','assets/NN_manual.md','assets/NN_prompt_inicial_execucao.md',
- 'assets/ESTADO.md','assets/decisoes/0000-modelo.md']
+ 'assets/ESTADO.md','assets/decisoes/0000-modelo.md',
+ 'assets/v2/plano.json','assets/v2/task.json','assets/v2/ESTADO.json','assets/v2/SPRINT.md',
+ 'assets/v2/PROMPT_MAPA.md','assets/v2/memoria-global.md','assets/v2/memoria-dominio.md']
 partes = ["""# Planejamento de sistemas — instruções completas
 
 > Versão de arquivo único, para IAs que não têm sistema de skills. Cole como instrução do

@@ -1,4 +1,35 @@
-# Planejamento de sistemas
+# Planejamento de Sistemas — versão 2.0
+
+Skill open source que transforma ideias em planos executáveis para agentes de IA. Organiza **sprints demonstráveis, prompts-mapa humanos, tasks pequenas, memória seletiva e testes progressivos** com avaliação humana obrigatória.
+
+A metodologia anterior 1.x segue disponível para planos já gerados. O foco da versão 2.0 é reduzir decisões improvisadas por modelos executores, sem afirmar economia de tokens ou produtividade sem medição.
+
+## Demonstração do fluxo 2.0
+
+[Exemplo de sprint de login](examples/fluxo-v2/README.md): 2 prompts, 4 tasks e memória por domínio. É uma demonstração do **planejamento**, não um aplicativo de login implementado.
+
+    git clone https://github.com/devandrelima/planejamento-de-sistemas.git
+    cd planejamento-de-sistemas
+    python3 -m unittest discover -s tests -v
+    python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 validar
+    python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 prontas
+    python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 contexto S01-P01-T01
+    ./build.sh
+
+### Funcionamento
+
+Cada sprint contém 1 a 3 prompts-mapa, e cada prompt relaciona tasks técnicas. O executor recebe somente o contexto autorizado para a task. Testes locais acompanham cada task, testes dos fluxos afetados fecham a sprint e a suíte global roda a cada 3 sprints ou antes quando o risco exigir. Cobertura mínima: 80% no código alterado e 80% global nos checkpoints.
+
+Depois da demonstração, **a próxima sprint permanece bloqueada até aprovação humana**. Tasks independentes podem ser distribuídas entre worktrees/branches de agentes diferentes, com integração serial.
+
+Consulte [metodologia v2](skills/planejamento-de-sistemas/references/fluxo-v2.md), [contexto](skills/planejamento-de-sistemas/references/contexto-v2.md), [design](skills/planejamento-de-sistemas/references/design-adaptativo.md) e [testes](skills/planejamento-de-sistemas/references/testes-progressivos.md).
+
+### Limitações
+
+A CLI não executa código do aplicativo, não audita automaticamente logs, não autentica quem aprova a sprint, não lança agentes, não garante isolamento dos arquivos declarados, não realiza merge e não mede tokens reais. As evidências de cobertura e testes inseridas no estado precisam de verificação externa. O pacote de contexto usa estimativa aproximada de caracteres/4.
+
+## Instalação e documentação do fluxo legado 1.x
+
 
 Uma skill de IA que transforma uma ideia de sistema numa **especificação executável**: uma pasta de
 documentos que você entrega a uma IA construtora (Claude Code, Cursor, o que for) para o sistema
@@ -96,8 +127,7 @@ Configurações → Capacidades → Skills. (É um zip comum; se a interface ped
 ### ChatGPT, Gemini, Cursor e outras
 
 Use a versão de arquivo único —
-[`dist/planejamento-de-sistemas-completo.md`](dist/planejamento-de-sistemas-completo.md), com os 18
-arquivos concatenados na ordem de leitura:
+[`dist/planejamento-de-sistemas-completo.md`](dist/planejamento-de-sistemas-completo.md), com as instruções e modelos concatenados na ordem de leitura:
 
 - **ChatGPT Projects / Gemini Gems / Claude Projects:** anexe o arquivo à base de conhecimento e
   ponha na instrução: *"Siga PLANEJAMENTO. Comece pela Fase 1 (entrevista), uma rodada de perguntas
@@ -125,7 +155,9 @@ arquivos concatenados na ordem de leitura:
 | `dist/` | Artefatos gerados: pacote `.skill` e versão de arquivo único |
 | `build.sh` | Regera `dist/` (workflow exclusivo de distribuição a cada push em `skills/`) |
 | `skills/planejamento-de-sistemas/scripts/validar.py` | Validador estrutural local de especificações |
-| `tests/` | Testes automatizados do validador |
+| `tests/` | Testes automatizados dos validadores v1 e v2 |
+| `skills/planejamento-de-sistemas/scripts/fluxo.py` | CLI da versão 2.0 |
+| `examples/fluxo-v2/` | Demonstração reproduzível de sprints e tasks |
 | `examples/caixafuturo/` | Especificação demonstrativa de MVP, sem código do aplicativo |
 
 ## Avaliar a qualidade dos planos

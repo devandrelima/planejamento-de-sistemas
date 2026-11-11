@@ -1,3 +1,20 @@
+# Revisão de qualidade
+
+## Fluxo 2.0 (padrão)
+
+- [ ] Sprint contém entrega ponta a ponta, comando de demonstração, regressão afetada e gate humano.
+- [ ] Prompt descreve mapa para pessoa; task descreve execução para agente, com instruções sem ambiguidade.
+- [ ] Existem de 1 a 3 prompts por sprint, com tasks dependentes explícitas, escrita autorizada e testes locais.
+- [ ] Memória seletiva fornece somente contexto da task e contratos canônicos. Alteração de contrato invalida os pacotes dependentes.
+- [ ] A escolha de skills de design usa apenas opções efetivamente disponíveis, com revisão visual da interface.
+- [ ] Durante tasks, testes rápidos; ao fim da sprint, regressão afetada e cobertura alterada medida >=80%.
+- [ ] A cada 3 sprints e conforme risco, suíte completa e cobertura global >=80%.
+- [ ] Tasks paralelas não disputam arquivos. Integração serial e aprovação humana obrigatória.
+- [ ] fluxo.py validar foi executado e retornou zero erros, sem fingir verificação semântica.
+- [ ] Não há afirmação de tokens poupados sem medição, nem de aplicativo executado sem teste real.
+
+## Fluxo 1.x (legado)
+
 # Revisão final do conjunto
 
 Passe por esta lista antes de entregar. Ela é feita do que costuma faltar — e o custo de cada falha
