@@ -82,6 +82,7 @@ class FlowV2Tests(unittest.TestCase):
         self.project().finish_task(tid, "abc1234", "teste unitário executado e conferido")
 
     def test_sync_adds_new_task_without_erasing_old_evidence(self):
+        self.put("docs/especificacao/memoria/ui.md", "Contexto visual atualizado")
         self.finish("S01-P01-T01")
         fresh = self.task("S01-P02-T03", ["S01-P02-T02"], ["src/ajuste.py"],
                           "docs/especificacao/memoria/ui.md")
