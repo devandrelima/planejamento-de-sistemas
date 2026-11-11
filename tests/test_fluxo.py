@@ -170,6 +170,8 @@ class FlowV2Tests(unittest.TestCase):
                 for ref in p["tasks"]:
                     task = json.loads((self.spec / ref).read_text())
                     state["tasks"][task["id"]] = {"status": "concluida", "commit": "abc1234", "evidence": "testado"}
+        for tid in self.tasks:
+            state["tasks"][tid] = {"status": "concluida", "commit": "abc1234", "evidence": "testado"}
         state["sprints"]["S01"]["human_approved"] = True
         state["sprints"]["S02"]["human_approved"] = True
         self.put("ESTADO.json", json.dumps(state))
