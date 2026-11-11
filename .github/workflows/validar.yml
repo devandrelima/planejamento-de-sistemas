@@ -17,28 +17,33 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Testes do validador
+      - name: Testes do motor de tasks
         run: python3 -m unittest discover -s tests -v
-      - name: Validar demonstração
-        run: python3 skills/planejamento-de-sistemas/scripts/validar.py examples/caixafuturo/especificacao --strict
-      - name: Validar plano e contexto v2
+      - name: Validar exemplo e isolamento de contexto
         run: |
           python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 validar
           python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 prontas
-          python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 contexto S01-P01-T01 --saida /tmp/task-v2.md
-          grep -q 'Contrato de login' /tmp/task-v2.md
-          if grep -q 'Memória de domínio — interface' /tmp/task-v2.md; then
-            echo 'Contexto de interface apareceu em task backend' >&2
+          python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 contexto S01-P01-T01 --saida /tmp/task-atual.md
+          grep -q 'Contrato de login' /tmp/task-atual.md
+          if grep -q 'Memória de domínio — interface' /tmp/task-atual.md; then
+            echo 'Vazamento de contexto de design numa task de backend' >&2
+            exit 1
+          fi
+      - name: Rejeitar resíduos de protocolos antigos
+        run: |
+          if grep -RinE 'fluxo-v1|(^|[^[:alnum:]])v1([^[:alnum:]]|$)|1\.x|validar\.py|test_validador' \
+            README.md docs/ skills/ examples/ tests/ .claude-plugin/ --include='*.md' --include='*.py' --include='*.json'; then
+            echo 'Referência a protocolo removido detectada' >&2
             exit 1
           fi
       - name: Build da distribuição
         run: ./build.sh
-      - name: Verificar integridade e reprodutibilidade
+      - name: Integridade e reprodutibilidade
         run: |
           unzip -t dist/planejamento-de-sistemas.skill
           grep -q 'ARQUIVO: references/fluxo-v2.md' dist/planejamento-de-sistemas-completo.md
-          if unzip -Z1 dist/planejamento-de-sistemas.skill | grep -E '(__pycache__/|\\.pyc$|\\.pyo$)'; then
-            echo 'Cache Python detectado no pacote' >&2
+          if unzip -Z1 dist/planejamento-de-sistemas.skill | grep -E '(validar.py|fluxo-v1|__pycache__/|\.pyc$|\.pyo$)'; then
+            echo 'Arquivo indevido no pacote' >&2
             exit 1
           fi
           sha256sum dist/planejamento-de-sistemas.skill dist/planejamento-de-sistemas-completo.md > /tmp/dist-sha256

@@ -1,84 +1,76 @@
 ---
 name: planejamento-de-sistemas
-description: Planeja sistemas e módulos com especificações executáveis para agentes de IA. Padrão v2 com sprints demonstráveis, prompts-mapa humanos, tasks JSON, memória seletiva, testes progressivos, revisão visual e aceite humano. Suporta o formato legado v1 com prompts executáveis. Use para planejamento, requisitos, MVP, arquitetura, decomposição em tasks, orquestração e desenvolvimento guiado por IA.
+description: Transforma ideias de sistemas em planos executáveis por agentes de IA, com sprints funcionais, prompts-mapa para o humano, tasks JSON, memória contextual seletiva, testes progressivos, design adaptativo, execução paralela controlada e aprovação humana. Use para mapear MVP, requisitos, arquitetura, documentação, continuidade de agentes e planos de implementação.
 ---
 
-# Planejamento de Sistemas — 2.0
+# Planejamento de Sistemas 2.0
 
-Converta a ideia do usuário em um plano operacional verificável que possa ser executado com agentes mais simples, pouco contexto e avaliação humana frequente. **A versão 2.0 é padrão em projetos novos.** Para continuar especificação 1.x já existente, use references/fluxo-v1.md e scripts/validar.py; não migre automaticamente.
+A única metodologia deste repositório organiza a construção de software em PROJETO → SPRINT → PROMPT-MAPA → TASK. O humano recebe os mapas; o agente recebe a task e seu contexto mínimo. Toda sprint deve entregar um incremento executável, integrado, testado e avaliado pelo humano antes da seguinte.
 
-## Organização obrigatória
+## Fase 1 — Descobrir e definir
 
-**Projeto → Sprint → Prompt-mapa → Task executável.**
+Leia references/entrevista.md, references/planejamento-mvp.md e, se houver código prévio, references/sistema-existente.md. Identifique usuário, problema, prazo, recursos, riscos, dados, integrações, stack e a primeira funcionalidade que a pessoa realmente poderá executar. Separe Agora / Depois / Não construir. Confirme decisões e pendências que bloqueiam a execução.
 
-- Sprint: entrega de ponta a ponta que o usuário consegue iniciar, utilizar e avaliar. Nunca avançar sem aceite humano explícito.
-- Prompt-mapa: documento para o humano selecionar e entregar ao agente; relaciona tarefas, dependências e entrega. Não é o contexto integral do executor.
-- Task: instrução concreta para um agente, com dependências, arquivos autorizados, memória, testes locais, orçamento de contexto e critérios de aceite.
+## Fase 2 — Planejar entregas
 
-Use 1 a 3 prompts por sprint; 2 como preferência, não obrigação. Quebre tasks até que possam ser executadas sem decisão arquitetural implícita. A primeira sprint entrega valor verificável, não apenas infraestrutura sem interface/fluxo útil. Login é exemplo, não pré-requisito universal.
+Leia references/fluxo-v2.md, references/paralelismo-v2.md e references/design-adaptativo.md. Para cada sprint:
+- Descreva o valor entregue, como executar o aplicativo, os dados de teste e os fluxos de regressão.
+- Defina 1–3 prompts-mapa (preferência por 2, sem criar trabalho artificial).
+- Decomponha os mapas em tasks pequenas, com dependências, contexto, comandos de testes, arquivos de leitura/escrita e critérios objetivos.
+- Feche contratos compartilhados antes de autorizar agentes em paralelo.
+- Escolha skills de design realmente instaladas somente nas tarefas que precisam delas.
 
-## Fase 1 — Entrevista, escopo e MVP
+## Fase 3 — Gerar a especificação
 
-Leia references/entrevista.md e references/planejamento-mvp.md. Pergunte em rodadas curtas, proponha padrões, identifique prazo, orçamento, equipe, experiência, fluxo principal, stack, atores, segurança, dados, integrações, decisões, riscos e como a pessoa poderá testar cada entrega. Defina agora/depois/não construir. Leia o código de repositórios existentes antes de propor mudanças. Confirme o resumo das decisões.
+Leia references/contexto-v2.md e references/testes-progressivos.md. Use exclusivamente os modelos de assets/v2/. Para o projeto que será construído, gere:
 
-## Fase 2 — Planejamento das sprints
+- docs/especificacao/README.md e 00_visao_geral_e_decisoes.md.
+- docs/especificacao/plano.json, com schema_version "2.0", human_gate true, coverage_min 80, full_suite_every 3.
+- docs/especificacao/sprints/S01/P01.md como mapa humano e sprints/S01/tasks/T01.json e demais tasks.
+- docs/especificacao/memoria/global.md, memórias curtas de cada domínio e contratos canônicos quando necessários.
+- ESTADO.json na raiz, com tasks pendentes e sprints sem aceite; docs/decisoes/ com registros de decisão, quando necessário.
 
-Leia references/fluxo-v2.md, references/paralelismo-v2.md e references/design-adaptativo.md. Para cada sprint, escreva a entrega demonstrável e o comando de execução, escolha 1–3 prompts-mapa e decomponha em tasks pequenas. Declare as dependências de tasks, contratos canônicos, comandos de teste, contexto mínimo e arquivos de leitura/escrita. Feche contratos compartilhados antes de paralelizar backend e UI.
+Mapas e manifestos no plano são caminhos relativos à pasta docs/especificacao. Contexto, leituras e escritas de cada task são relativos à raiz do aplicativo. Não exigir o repositório todo por padrão nem repetir contrato em vários resumos. Decisões que impactam tasks futuras exigem revisão de seus manifestos.
 
-Para tarefas de interface, inventarie skills efetivamente instaladas no ambiente, selecione as úteis por UX, acessibilidade e compatibilidade e registre a justificativa e fallback. Não invente skills.
+## Fase 4 — Validar e executar
 
-## Fase 3 — Criar a especificação 2.0
+A ferramenta scripts/fluxo.py roda com Python 3.10+ sem dependências externas. Executando-a a partir deste repositório, prefixe skills/planejamento-de-sistemas/scripts/.
 
-Leia references/contexto-v2.md e references/testes-progressivos.md; copie e preencha os modelos de assets/v2/. Dentro do repositório do aplicativo, gere:
+Exemplos de comandos no projeto do aplicativo:
 
-- docs/especificacao/README.md e 00_visao_geral_e_decisoes.md
-- docs/especificacao/plano.json, com schema_version 2.0, human_gate true, coverage_min 80 e full_suite_every 3
-- docs/especificacao/sprints/S01/P01.md (mapa humano) e sprints/S01/tasks/T01.json etc.
-- docs/especificacao/memoria/global.md e memórias por domínio, contratos canônicos quando aplicáveis
-- ESTADO.json na raiz (fonte de verdade do protocolo 2.0) e docs/decisoes/ para ADRs
+    python3 scripts/fluxo.py --repo CAMINHO validar
+    python3 scripts/fluxo.py --repo CAMINHO prontas
+    python3 scripts/fluxo.py --repo CAMINHO contexto S01-P01-T01
+    python3 scripts/fluxo.py --repo CAMINHO sincronizar
 
-Em plano.json os caminhos dos mapas e tasks são relativos a docs/especificacao; em cada task, context, reads e writes são relativos à raiz do projeto. Nunca exigir o repositório inteiro como contexto por padrão. A memória global é pequena; arquivos específicos de UI não entram em task de backend.
+O humano entrega um prompt-mapa; o executor carrega cada task pelo comando contexto, implementa, roda testes locais e registra commit e resultados. O integrador inspeciona mudanças e evidências, testa regressão dos fluxos afetados, mede cobertura do código alterado >=80%, executa o aplicativo e apresenta roteiro de demonstração.
 
-## Fase 4 — Validar, executar, revisar
+**Pausa obrigatória após cada sprint:** aguardar decisão explícita da pessoa. Se pedir mudanças, reformular tasks e sincronizar o estado sem apagar histórico. Se aprovar, registrar feedback, testes, cobertura e demo. Rodar suíte completa com cobertura global >=80% na terceira sprint, na última e antecipadamente por risco elevado ou impacto transversal.
 
-Ferramenta sem dependências externas: scripts/fluxo.py, Python 3.10+.
-Ao executá-la a partir do repositório desta skill, seu caminho é skills/planejamento-de-sistemas/scripts/fluxo.py.
+O comando prontas identifica tasks elegíveis e um lote sem conflitos diretos de escrita. Se paralelizar, usar worktrees/branches independentes, integrar em sequência e manter um único responsável por ESTADO.json. A ferramenta não inicia agentes, não impõe isolamento de arquivos, não autentica o aprovador e não executa os testes do aplicativo. Evidências e métricas registradas são declarações que precisam ser verificadas em Git, logs e CI.
 
-Exemplos:
+## Regras de qualidade
 
-    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO validar
-    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO prontas
-    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO contexto S01-P01-T01
-    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO concluir S01-P01-T01 --commit HASH --evidencia "testes realmente executados"
+- Segurança, integridade e contratos nunca podem ser sacrificados para reduzir tokens.
+- Não invente medições de cobertura, testes executados, consumo de tokens, skills instaladas ou aplicativos demonstrados.
+- Cada task deve ser suficientemente precisa para um modelo menos capaz, sem repetir informações desnecessárias.
+- Evite componentes sem uso e infraestrutura que não faça parte do MVP.
+- Interface precisa de revisão visual, acessibilidade, estados e responsividade.
+- Se o contexto autorizado for insuficiente, ampliar de modo justificado e atualizar o manifesto; nunca truncar invariantes.
+- Não iniciar a próxima sprint sem aceite humano.
 
-A CLI monta contexto a partir de manifestos e SHA-256 das fontes, e estima tokens como caracteres / 4 (não é medição real). Se extrapolar orçamento, replaneje a task em vez de truncar regras essenciais.
+## Referências disponíveis
 
-O executor faz TDD local quando há comportamento. O integrador inspeciona commits e logs, testa os fluxos afetados e mede cobertura do código novo/modificado >=80%, iniciando o sistema e preparando o roteiro de demo. Pausar **sempre** para avaliação humana; o agente não pode se autoaprovar. Registrar ajuste ou aceite via CLI apenas com decisão explícita do humano, reconhecendo que evidências são declaradas e exigem verificação externa.
-
-A cada terceira sprint, antes da entrega final e antes quando o risco for alto, executar suíte completa e medir cobertura global >=80%. Não afirmar resultados que não foram realmente medidos.
-
-A execução paralela é opcional. A CLI lista um lote sem colisão direta de caminhos, mas não lança agentes nem isola filesystem. Use worktrees/branches por agente e um integrador para merge serial e atualização de ESTADO.json. Registrar feedback que afete contratos, atualizar tasks futuras e invalidar contextos dependentes antes de prosseguir.
-
-## Regras inegociáveis
-
-- Não revelar segredos, modificar outros projetos fora do escopo nem fazer deploy sem permissão.
-- Não inventar testes, cobertura, commits, skills instaladas, ganhos de produtividade ou economia de tokens.
-- Não criar tarefas gigantes nem exagerar camadas para um MVP.
-- Não sacrificar segurança ou contratos para caber em orçamento de tokens.
-- Não presumir que o registro da CLI constitui prova de execução: logs, Git, CI e demo são evidências externas.
-- Usar uma única fonte canônica para cada contrato ou decisão.
-- O formato legado continua suportado; referências de 1.x não se aplicam automaticamente aos checkpoints de 2.0.
-
-## Arquivos principais
-
-| Caminho | Leitura |
+| Caminho | Responsabilidade |
 |---|---|
-| references/fluxo-v2.md | Sprints, mapas, tasks e avaliação |
-| references/contexto-v2.md | Pacotes seletivos, orçamento e invalidação |
-| references/testes-progressivos.md | Testes por task/sprint e cobertura de 80% |
+| references/entrevista.md | Descoberta e decisões |
+| references/planejamento-mvp.md | Recorte viável |
+| references/sistema-existente.md | Planejamento em código existente |
+| references/fluxo-v2.md | Hierarquia e execução por entregas |
+| references/contexto-v2.md | Memória seletiva e orçamento |
+| references/testes-progressivos.md | Testes por task, sprint e checkpoint |
 | references/paralelismo-v2.md | Dependências e agentes isolados |
-| references/design-adaptativo.md | Seleção e revisão de skills de design |
-| references/planejamento-mvp.md | Viabilidade e recorte |
-| assets/v2/ | Modelos de manifestos e memórias |
-| scripts/fluxo.py | Validação, elegibilidade, contexto e evidências |
-| references/fluxo-v1.md | Continuação dos planejamentos legados |
+| references/design-adaptativo.md | Seleção de skills e qualidade visual |
+| references/qualidade.md | Checklist de revisão |
+| assets/v2/ | Templates do formato atual |
+| scripts/fluxo.py | CLI e validador estrutural |

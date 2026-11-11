@@ -1,12 +1,24 @@
-# Planejamento de Sistemas — versão 2.0
+# Planejamento de Sistemas 2.0
 
-Skill open source que transforma ideias em planos executáveis para agentes de IA. Organiza **sprints demonstráveis, prompts-mapa humanos, tasks pequenas, memória seletiva e testes progressivos** com avaliação humana obrigatória.
+Skill de IA para transformar uma ideia de software em um plano de construção com entregas frequentes, contexto enxuto e validação verificável.
 
-A metodologia anterior 1.x segue disponível para planos já gerados. O foco da versão 2.0 é reduzir decisões improvisadas por modelos executores, sem afirmar economia de tokens ou produtividade sem medição.
+**Fluxo:** Projeto → Sprint → Prompt-mapa → Task.
 
-## Demonstração do fluxo 2.0
+O humano recebe os prompts como mapas de trabalho; os agentes executam tasks com dependências explícitas, arquivos permitidos, contexto selecionado, testes e critérios de aceite. Cada sprint produz uma versão que o usuário pode executar e avaliar, e a próxima fica bloqueada até aprovação explícita.
 
-[Exemplo de sprint de login](examples/fluxo-v2/README.md): 2 prompts, 4 tasks e memória por domínio. É uma demonstração do **planejamento**, não um aplicativo de login implementado.
+## O que oferece
+
+- **Entregas incrementais:** sprints com 1 a 3 prompts-mapa, preferencialmente 2, e tasks pequenas para execução especializada.
+- **Memória seletiva:** contexto global mínimo e arquivos por domínio/task, com SHA-256 e orçamento estimado de tokens.
+- **Testes progressivos:** testes locais durante cada task; regressão dos fluxos afetados ao fim da sprint; suíte completa a cada 3 sprints, na entrega final ou antes quando o risco exigir.
+- **Cobertura exigida:** >=80% no código novo/alterado por sprint e >=80% global nos checkpoints, sempre medida por ferramenta adequada ao projeto.
+- **Design adaptativo:** briefing visual, escolha contextual das skills disponíveis e revisão de usabilidade e acessibilidade.
+- **Paralelismo controlado:** elegibilidade por dependências e detecção de colisão direta nos arquivos de escrita, com integração serial.
+- **Avaliação humana:** a conclusão técnica da sprint não equivale a aprovação do usuário.
+
+## Como experimentar
+
+O exemplo [login incremental](examples/fluxo-v2/README.md) contém um planejamento com uma sprint, dois prompts e quatro tasks. Demonstra a **metodologia**, não um aplicativo de login pronto.
 
     git clone https://github.com/devandrelima/planejamento-de-sistemas.git
     cd planejamento-de-sistemas
@@ -14,160 +26,48 @@ A metodologia anterior 1.x segue disponível para planos já gerados. O foco da 
     python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 validar
     python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 prontas
     python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 contexto S01-P01-T01
-    # Depois de acrescentar tasks a um plano existente: comando sincronizar
     ./build.sh
 
-### Funcionamento
+O comando contexto entrega o pacote de execução apenas da task autorizada. Para adicionar tasks a um plano já em andamento, use o subcomando sincronizar; ele preserva evidências previamente registradas e impede remoções silenciosas de tasks.
 
-Cada sprint contém 1 a 3 prompts-mapa, e cada prompt relaciona tasks técnicas. O executor recebe somente o contexto autorizado para a task. Testes locais acompanham cada task, testes dos fluxos afetados fecham a sprint e a suíte global roda a cada 3 sprints ou antes quando o risco exigir. Cobertura mínima: 80% no código alterado e 80% global nos checkpoints.
+A CLI exige apenas Python 3.10+ e utiliza manifestos JSON, sem bibliotecas adicionais. Para uso em outro repositório, mantenha o script disponível e passe o diretório do aplicativo com --repo.
 
-Depois da demonstração, **a próxima sprint permanece bloqueada até aprovação humana**. Tasks independentes podem ser distribuídas entre worktrees/branches de agentes diferentes, com integração serial.
+## Instalação da skill
 
-Consulte [metodologia v2](skills/planejamento-de-sistemas/references/fluxo-v2.md), [contexto](skills/planejamento-de-sistemas/references/contexto-v2.md), [design](skills/planejamento-de-sistemas/references/design-adaptativo.md) e [testes](skills/planejamento-de-sistemas/references/testes-progressivos.md).
+### Claude Code (plugin)
 
-### Limitações
+    /plugin marketplace add devandrelima/planejamento-de-sistemas
+    /plugin install planejamento-de-sistemas
 
-A CLI não executa código do aplicativo, não audita automaticamente logs, não autentica quem aprova a sprint, não lança agentes, não garante isolamento dos arquivos declarados, não realiza merge e não mede tokens reais. As evidências de cobertura e testes inseridas no estado precisam de verificação externa. O pacote de contexto usa estimativa aproximada de caracteres/4.
+### Skill local
 
-## Instalação e documentação do fluxo legado 1.x
+    git clone https://github.com/devandrelima/planejamento-de-sistemas.git
+    ln -s "$PWD/planejamento-de-sistemas/skills/planejamento-de-sistemas" ~/.claude/skills/
 
+### Outras ferramentas
 
-Uma skill de IA que transforma uma ideia de sistema numa **especificação executável**: uma pasta de
-documentos que você entrega a uma IA construtora (Claude Code, Cursor, o que for) para o sistema
-sair de pé, sem ela precisar adivinhar nada nem ter visto a conversa original.
+Use o [pacote da skill](dist/planejamento-de-sistemas.skill) em aplicações que aceitem skills ZIP, ou o [documento único](dist/planejamento-de-sistemas-completo.md) como instruções anexadas a projetos do ChatGPT, Gemini, Cursor e ferramentas similares. Os comandos de execução dependem de acesso local a Python e aos arquivos do projeto.
 
-O critério de qualidade é este: **duas sessões diferentes, lendo só essa pasta, constroem a mesma
-coisa.**
+## Estrutura
 
-## O que ela faz
-
-1. **Entrevista você em blocos** — produto, atores, escopo, dados, integrações, contratos,
-   interface, requisitos não-funcionais, stack, operação, riscos —, propondo padrões em vez de
-   exigir que você redija requisitos do zero, e adaptando as perguntas às respostas anteriores.
-2. **Fecha as decisões** e devolve um resumo para você confirmar antes de escrever qualquer coisa.
-3. **Escreve o conjunto de documentos:**
-
-```
-docs/especificacao/
-├── README.md                      índice: tipo, dependências e entrega de cada arquivo
-├── 00_visao_geral_e_decisoes.md   escopo, atores, arquitetura, glossário, decisões numeradas,
-│                                  stack, convenções, invariantes, estratégia de testes, limites
-├── 01..NN_prompt_*.md             prompts executáveis, um por sessão, em ordem de dependência
-├── NN_contrato_*.md               contratos de API/eventos, campo a campo
-├── NN_manual_*.md                 manuais para pessoas (cadastros externos, cutover, operação)
-└── NN_prompt_inicial_execucao.md  o que colar na primeira sessão da IA construtora
-docs/decisoes/0000-modelo.md       modelo de ADR para registrar divergências durante a obra
-ESTADO.md                          memória entre sessões
-```
-
-Serve tanto para sistema novo do zero quanto para funcionalidade grande dentro de um repositório que
-já existe — nesse caso ela lê o código antes de perguntar, e monta uma rede de proteção de testes
-antes de deixar qualquer coisa ser alterada.
-
-## O que a diferencia
-
-**Testes primeiro, sempre.** A especificação não "inclui testes": ela nasce deles. Cada prompt traz
-uma seção "Ordem de trabalho" com ciclo vermelho-verde **por bloco** — suíte inteira verde como
-linha de base → testes do bloco falhando pelo motivo certo → implementação mínima → testes do bloco
-verdes → suíte inteira verde de novo. Teste escrito depois confirma o que o código faz; teste
-escrito antes verifica o que o sistema deveria fazer, e é a única coisa que uma IA construtora não
-consegue declarar pronta sem ser desmentida. Os critérios de aceite exigem a suíte **inteira** verde
-(não só os testes novos), piso de cobertura e zero testes pulados.
-
-**Continuidade entre sessões.** Como cada prompt roda numa sessão sem memória, todo prompt abre e
-fecha no `ESTADO.md`. Na abertura, confere se os anteriores realmente terminaram — e quando o
-arquivo está desatualizado (sessão que travou, contexto que acabou), reconcilia com o histórico do
-git: commit encontrado + entregas presentes + suíte verde → marca concluído e segue; entrega parcial
-→ termina o anterior antes; nada encontrado → para e avisa. O `ESTADO.md` entra no **mesmo commit**
-do trabalho, então "o commit existe" e "o estado está atualizado" são o mesmo fato.
-
-## Modo MVP e validação local
-
-A skill também pergunta sobre prazo, equipe, orçamento, dependências e critério mínimo de entrega. Se o objetivo for um MVP, separa o que é indispensável agora do que fica para depois, sem eliminar testes essenciais.
-
-O validador estrutural é escrito apenas com a biblioteca padrão do Python. Ele detecta referências inválidas, ausência de arquivos essenciais, índices inconsistentes, dependências circulares, decisões D1/D2 indefinidas e prompts sem aceite. Avisos sobre qualidade documental não substituem análise humana.
-
-Execute na raiz do repositório:
-
-```bash
-python3 skills/planejamento-de-sistemas/scripts/validar.py examples/caixafuturo/especificacao
-python3 skills/planejamento-de-sistemas/scripts/validar.py examples/caixafuturo/especificacao --json
-python3 -m unittest discover -s tests -v
-./build.sh
-unzip -t dist/planejamento-de-sistemas.skill
-```
-
-A demonstração reproduzível fica em [examples/caixafuturo](examples/caixafuturo/README.md). Ela mostra o planejamento, não uma versão implementada do aplicativo.
-
-**Limitações:** o validador não verifica correção semântica, qualidade de código ou produtividade. Para usar com uma instalação local da skill, ajuste o caminho do script; ele aceita qualquer pasta de especificação como argumento. Ações específicas do Claude Code, como revisões por slash commands, precisam ser substituídas por revisão equivalente no Codex ou em outro agente.
-
-## Como usar
-
-### Claude Code — como plugin (recomendado)
-
-```
-/plugin marketplace add devandrelima/planejamento-de-sistemas
-/plugin install planejamento-de-sistemas
-```
-
-Depois é só dizer o que quer planejar; ela dispara sozinha, ou você chama por
-`/planejamento-de-sistemas`. Atualiza com `/plugin marketplace update`.
-
-### Claude Code — como skill local
-
-```bash
-git clone https://github.com/devandrelima/planejamento-de-sistemas.git
-ln -s "$PWD/planejamento-de-sistemas/skills/planejamento-de-sistemas" ~/.claude/skills/
-```
-
-### Claude.ai e Claude Desktop
-
-Baixe [`dist/planejamento-de-sistemas.skill`](dist/planejamento-de-sistemas.skill) e envie em
-Configurações → Capacidades → Skills. (É um zip comum; se a interface pedir `.zip`, renomeie.)
-
-### ChatGPT, Gemini, Cursor e outras
-
-Use a versão de arquivo único —
-[`dist/planejamento-de-sistemas-completo.md`](dist/planejamento-de-sistemas-completo.md), com as instruções e modelos concatenados na ordem de leitura:
-
-- **ChatGPT Projects / Gemini Gems / Claude Projects:** anexe o arquivo à base de conhecimento e
-  ponha na instrução: *"Siga PLANEJAMENTO. Comece pela Fase 1 (entrevista), uma rodada de perguntas
-  por vez."*
-- **Cursor / Windsurf / Cline:** salve como regra do projeto (`.cursor/rules/planejamento.md`) e
-  chame por `@planejamento`.
-- **Por link:** mande a URL raw e peça para ela ler o arquivo inteiro antes de começar:
-
-  ```
-  https://raw.githubusercontent.com/devandrelima/planejamento-de-sistemas/main/dist/planejamento-de-sistemas-completo.md
-  ```
-
-  Funciona, com uma ressalva: a IA busca o conteúdo uma vez e pode truncar ou resumir. Anexar o
-  arquivo é mais confiável que mandar o link.
-- **Contexto apertado:** cole só o `SKILL.md` (~160 linhas) e vá colando a referência de cada fase
-  quando chegar nela — é o que o Claude Code faz sozinho com divulgação progressiva.
-
-## Estrutura do repositório
-
-| Caminho | O que é |
+| Caminho | Conteúdo |
 |---|---|
-| `skills/planejamento-de-sistemas/SKILL.md` | O fluxo em 4 fases, os princípios e as regras |
-| `skills/planejamento-de-sistemas/references/` | Entrevista, estrutura do conjunto, documento 00, continuidade entre sessões, testes, anatomia do prompt, sistema existente, checklist de revisão |
-| `skills/planejamento-de-sistemas/assets/` | Modelos prontos de cada tipo de documento |
-| `dist/` | Artefatos gerados: pacote `.skill` e versão de arquivo único |
-| `build.sh` | Regera `dist/` (workflow exclusivo de distribuição a cada push em `skills/`) |
-| `skills/planejamento-de-sistemas/scripts/validar.py` | Validador estrutural local de especificações |
-| `tests/` | Testes automatizados dos validadores v1 e v2 |
-| `skills/planejamento-de-sistemas/scripts/fluxo.py` | CLI da versão 2.0 |
-| `examples/fluxo-v2/` | Demonstração reproduzível de sprints e tasks |
-| `examples/caixafuturo/` | Especificação demonstrativa de MVP, sem código do aplicativo |
+| skills/planejamento-de-sistemas/SKILL.md | Instruções principais |
+| skills/planejamento-de-sistemas/references/ | Descoberta, planejamento, contexto, testes, design e paralelismo |
+| skills/planejamento-de-sistemas/assets/v2/ | Modelos de visão geral, sprints, mapas, tasks, memória e estado |
+| skills/planejamento-de-sistemas/scripts/fluxo.py | Validador, contexto seletivo e controle de tarefas |
+| examples/fluxo-v2/ | Plano demonstrativo de login incremental |
+| tests/test_fluxo.py | Testes automatizados da ferramenta |
+| docs/avaliacao.md | Critérios objetivos de avaliação |
+| build.sh | Gera artefatos reproduzíveis em dist/ |
 
-## Avaliar a qualidade dos planos
+## Limites do que foi implementado
 
-A metodologia de avaliação com casos fixos e critérios comparáveis está em [docs/avaliacao.md](docs/avaliacao.md). Ela separa verificações estruturais da revisão humana e não atribui ganhos de produtividade sem experimentos.
+A CLI valida a estrutura e registra **evidências declaradas**, mas não executa o aplicativo, não confere a identidade de quem aprova uma sprint, não audita sozinha os logs e não verifica cobertura automaticamente. Também não executa agentes, não faz merges e não impõe permissão real de arquivos; o integrador precisa conferir isso. A estimativa de tokens por tamanho textual não mede consumo nem custo faturado. Não atribuímos ganho de produtividade sem estudos de execução.
 
-## Contribuir
+## Qualidade e contribuição
 
-Abra uma issue com o cenário que falhou e um exemplo mínimo, preferencialmente sem dados privados. Inclua teste de regressão ao alterar o validador. Rode os testes, o validador no exemplo e `./build.sh` antes de propor alterações. O workflow `validar.yml` verifica testes, exemplo, integridade e reprodutibilidade dos pacotes; o `build.yml` é o único responsável por atualizar os arquivos em `dist/`.
+Antes de enviar mudanças, execute os testes, valide a demonstração e rode o build. O GitHub Actions testa o núcleo, confere a distribuição, valida a demonstração e verifica se a documentação é coerente. Consulte [avaliação dos planos](docs/avaliacao.md).
 
 ## Licença
 

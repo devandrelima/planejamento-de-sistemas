@@ -2,7 +2,7 @@
 """Planejamento 2.0: manifesto, contexto sob demanda e gates de sprint.
 
 Uso: python3 fluxo.py [--repo DIRETORIO] [--spec docs/especificacao] COMANDO
-Sem bibliotecas externas. O plano v1 continua com validar.py.
+Sem bibliotecas externas. Formato de plano: schema_version 2.0.
 """
 from __future__ import annotations
 

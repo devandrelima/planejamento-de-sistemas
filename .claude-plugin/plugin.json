@@ -1,6 +1,8 @@
 {
   "name": "planejamento-de-sistemas",
-  "description": "Planeja qualquer sistema como especificação executável: entrevista em blocos, decisões fechadas, prompts numerados com TDD por bloco e protocolo de continuidade entre sessões.",
-  "version": "1.0.0",
-  "author": { "name": "André Lima" }
+  "description": "Planejamento 2.0 com sprints utilizáveis, prompts-mapa humanos, tasks para agentes, memória seletiva, testes progressivos e revisão humana.",
+  "version": "2.0.0",
+  "author": {
+    "name": "André Lima"
+  }
 }

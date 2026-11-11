@@ -1,58 +1,68 @@
 #!/usr/bin/env bash
-# Regera os artefatos de dist/ a partir de skills/planejamento-de-sistemas/.
+# Distribuição única da metodologia 2.0. Executar na raiz do repositório.
 set -euo pipefail
 cd "$(dirname "$0")"
 SKILL=skills/planejamento-de-sistemas
 mkdir -p dist
 
-# Arquivo ZIP reprodutível: ordem, timestamps e permissões fixas; sem cache Python.
-python3 - "$SKILL" <<'PYZIP'
-import pathlib, sys, zipfile
-base = pathlib.Path(sys.argv[1])
-with zipfile.ZipFile('dist/planejamento-de-sistemas.skill', 'w') as z:
-    for file in sorted(base.rglob('*')):
-        if not file.is_file() or '__pycache__' in file.parts or file.suffix in {'.pyc', '.pyo'} or file.name == '.DS_Store':
-            continue
-        name = pathlib.Path('planejamento-de-sistemas') / file.relative_to(base)
-        info = zipfile.ZipInfo(name.as_posix(), date_time=(1980, 1, 1, 0, 0, 0))
-        info.compress_type = zipfile.ZIP_DEFLATED
-        info.external_attr = (0o100644 << 16)
-        z.writestr(info, file.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
-PYZIP
-
 python3 - "$SKILL" <<'PY'
-import pathlib, sys
-base = pathlib.Path(sys.argv[1])
-ordem = ['SKILL.md',
- 'references/fluxo-v2.md','references/contexto-v2.md','references/testes-progressivos.md',
- 'references/paralelismo-v2.md','references/design-adaptativo.md','references/fluxo-v1.md',
- 'references/entrevista.md','references/planejamento-mvp.md','references/estrutura-do-conjunto.md','references/documento-00.md',
- 'references/continuidade-entre-sessoes.md','references/testes.md','references/anatomia-do-prompt.md',
- 'references/sistema-existente.md','references/qualidade.md',
- 'assets/00_visao_geral_e_decisoes.md','assets/README_indice.md','assets/NN_prompt.md',
- 'assets/NN_contrato.md','assets/NN_manual.md','assets/NN_prompt_inicial_execucao.md',
- 'assets/ESTADO.md','assets/decisoes/0000-modelo.md',
- 'assets/v2/plano.json','assets/v2/task.json','assets/v2/ESTADO.json','assets/v2/SPRINT.md',
- 'assets/v2/PROMPT_MAPA.md','assets/v2/memoria-global.md','assets/v2/memoria-dominio.md']
-partes = ["""# Planejamento de sistemas — instruções completas
+import pathlib
+import sys
+import zipfile
 
-> Versão de arquivo único, para IAs que não têm sistema de skills. Cole como instrução do
-> projeto/assistente, ou anexe à base de conhecimento, e comece dizendo o que quer planejar.
->
-> Tudo o que a skill original divide em arquivos está aqui, na ordem de leitura. Onde o texto disser
-> "leia `references/x.md`" ou "modelo em `assets/y.md`", role até a seção correspondente deste
-> arquivo — os títulos de nível 1 marcam cada um.
->
-> Gerado automaticamente a partir dos arquivos-fonte (sem data variável).
+base = pathlib.Path(sys.argv[1])
+dest = pathlib.Path("dist")
+order = [
+    "SKILL.md",
+    "references/entrevista.md",
+    "references/planejamento-mvp.md",
+    "references/sistema-existente.md",
+    "references/fluxo-v2.md",
+    "references/contexto-v2.md",
+    "references/testes-progressivos.md",
+    "references/paralelismo-v2.md",
+    "references/design-adaptativo.md",
+    "references/qualidade.md",
+    "assets/v2/00_visao_geral_e_decisoes.md",
+    "assets/v2/README_indice.md",
+    "assets/v2/SPRINT.md",
+    "assets/v2/PROMPT_MAPA.md",
+    "assets/v2/plano.json",
+    "assets/v2/task.json",
+    "assets/v2/ESTADO.json",
+    "assets/v2/memoria-global.md",
+    "assets/v2/memoria-dominio.md",
+    "assets/v2/ADR.md",
+]
+for rel in order:
+    if not (base / rel).is_file():
+        raise SystemExit(f"Documento de distribuição inexistente: {rel}")
+
+with zipfile.ZipFile(dest / "planejamento-de-sistemas.skill", "w") as archive:
+    for file in sorted(base.rglob("*")):
+        if not file.is_file() or "__pycache__" in file.parts or file.suffix in (".pyc", ".pyo") or file.name == ".DS_Store":
+            continue
+        name = pathlib.Path("planejamento-de-sistemas") / file.relative_to(base)
+        item = zipfile.ZipInfo(name.as_posix(), date_time=(1980, 1, 1, 0, 0, 0))
+        item.compress_type = zipfile.ZIP_DEFLATED
+        item.external_attr = 0o100644 << 16
+        archive.writestr(item, file.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+
+header = """# Planejamento de Sistemas 2.0 — instruções completas
+
+> Documento único para assistentes sem suporte a skills. Para executar a CLI e seus testes,
+> utilize o pacote da skill com o script scripts/fluxo.py.
+> Este documento contém exclusivamente instruções e modelos da metodologia atual.
+> Gerado de forma reproduzível a partir das fontes do repositório.
 
 ---
-"""]
-for rel in ordem:
-    txt = (base/rel).read_text()
-    if rel == 'SKILL.md':
-        txt = txt.split('---', 2)[2].lstrip()
-    partes.append(f"\n\n<!-- ═══ {rel} ═══ -->\n\n# ARQUIVO: {rel}\n\n{txt}\n\n---\n")
-pathlib.Path('dist/planejamento-de-sistemas-completo.md').write_text(''.join(partes))
-print("dist/planejamento-de-sistemas-completo.md")
+"""
+parts = [header]
+for rel in order:
+    content = (base / rel).read_text(encoding="utf-8")
+    if rel == "SKILL.md":
+        content = content.split("---", 2)[2].lstrip()
+    parts.append(f"\n\n<!-- ARQUIVO: {rel} -->\n\n# ARQUIVO: {rel}\n\n{content}\n\n---\n")
+(dest / "planejamento-de-sistemas-completo.md").write_text("".join(parts), encoding="utf-8")
+print("Dist da metodologia atual gerada com sucesso")
 PY
-echo "dist/planejamento-de-sistemas.skill"
