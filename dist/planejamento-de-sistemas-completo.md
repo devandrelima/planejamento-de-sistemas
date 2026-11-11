@@ -16,6 +16,220 @@
 
 # ARQUIVO: SKILL.md
 
+# Planejamento de Sistemas — 2.0
+
+Converta a ideia do usuário em um plano operacional verificável que possa ser executado com agentes mais simples, pouco contexto e avaliação humana frequente. **A versão 2.0 é padrão em projetos novos.** Para continuar especificação 1.x já existente, use references/fluxo-v1.md e scripts/validar.py; não migre automaticamente.
+
+## Organização obrigatória
+
+**Projeto → Sprint → Prompt-mapa → Task executável.**
+
+- Sprint: entrega de ponta a ponta que o usuário consegue iniciar, utilizar e avaliar. Nunca avançar sem aceite humano explícito.
+- Prompt-mapa: documento para o humano selecionar e entregar ao agente; relaciona tarefas, dependências e entrega. Não é o contexto integral do executor.
+- Task: instrução concreta para um agente, com dependências, arquivos autorizados, memória, testes locais, orçamento de contexto e critérios de aceite.
+
+Use 1 a 3 prompts por sprint; 2 como preferência, não obrigação. Quebre tasks até que possam ser executadas sem decisão arquitetural implícita. A primeira sprint entrega valor verificável, não apenas infraestrutura sem interface/fluxo útil. Login é exemplo, não pré-requisito universal.
+
+## Fase 1 — Entrevista, escopo e MVP
+
+Leia references/entrevista.md e references/planejamento-mvp.md. Pergunte em rodadas curtas, proponha padrões, identifique prazo, orçamento, equipe, experiência, fluxo principal, stack, atores, segurança, dados, integrações, decisões, riscos e como a pessoa poderá testar cada entrega. Defina agora/depois/não construir. Leia o código de repositórios existentes antes de propor mudanças. Confirme o resumo das decisões.
+
+## Fase 2 — Planejamento das sprints
+
+Leia references/fluxo-v2.md, references/paralelismo-v2.md e references/design-adaptativo.md. Para cada sprint, escreva a entrega demonstrável e o comando de execução, escolha 1–3 prompts-mapa e decomponha em tasks pequenas. Declare as dependências de tasks, contratos canônicos, comandos de teste, contexto mínimo e arquivos de leitura/escrita. Feche contratos compartilhados antes de paralelizar backend e UI.
+
+Para tarefas de interface, inventarie skills efetivamente instaladas no ambiente, selecione as úteis por UX, acessibilidade e compatibilidade e registre a justificativa e fallback. Não invente skills.
+
+## Fase 3 — Criar a especificação 2.0
+
+Leia references/contexto-v2.md e references/testes-progressivos.md; copie e preencha os modelos de assets/v2/. Dentro do repositório do aplicativo, gere:
+
+- docs/especificacao/README.md e 00_visao_geral_e_decisoes.md
+- docs/especificacao/plano.json, com schema_version 2.0, human_gate true, coverage_min 80 e full_suite_every 3
+- docs/especificacao/sprints/S01/P01.md (mapa humano) e sprints/S01/tasks/T01.json etc.
+- docs/especificacao/memoria/global.md e memórias por domínio, contratos canônicos quando aplicáveis
+- ESTADO.json na raiz (fonte de verdade do protocolo 2.0) e docs/decisoes/ para ADRs
+
+Em plano.json os caminhos dos mapas e tasks são relativos a docs/especificacao; em cada task, context, reads e writes são relativos à raiz do projeto. Nunca exigir o repositório inteiro como contexto por padrão. A memória global é pequena; arquivos específicos de UI não entram em task de backend.
+
+## Fase 4 — Validar, executar, revisar
+
+Ferramenta sem dependências externas: scripts/fluxo.py, Python 3.10+.
+Ao executá-la a partir do repositório desta skill, seu caminho é skills/planejamento-de-sistemas/scripts/fluxo.py.
+
+Exemplos:
+
+    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO validar
+    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO prontas
+    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO contexto S01-P01-T01
+    python3 scripts/fluxo.py --repo CAMINHO_DO_APLICATIVO concluir S01-P01-T01 --commit HASH --evidencia "testes realmente executados"
+
+A CLI monta contexto a partir de manifestos e SHA-256 das fontes, e estima tokens como caracteres / 4 (não é medição real). Se extrapolar orçamento, replaneje a task em vez de truncar regras essenciais.
+
+O executor faz TDD local quando há comportamento. O integrador inspeciona commits e logs, testa os fluxos afetados e mede cobertura do código novo/modificado >=80%, iniciando o sistema e preparando o roteiro de demo. Pausar **sempre** para avaliação humana; o agente não pode se autoaprovar. Registrar ajuste ou aceite via CLI apenas com decisão explícita do humano, reconhecendo que evidências são declaradas e exigem verificação externa.
+
+A cada terceira sprint, antes da entrega final e antes quando o risco for alto, executar suíte completa e medir cobertura global >=80%. Não afirmar resultados que não foram realmente medidos.
+
+A execução paralela é opcional. A CLI lista um lote sem colisão direta de caminhos, mas não lança agentes nem isola filesystem. Use worktrees/branches por agente e um integrador para merge serial e atualização de ESTADO.json. Registrar feedback que afete contratos, atualizar tasks futuras e invalidar contextos dependentes antes de prosseguir.
+
+## Regras inegociáveis
+
+- Não revelar segredos, modificar outros projetos fora do escopo nem fazer deploy sem permissão.
+- Não inventar testes, cobertura, commits, skills instaladas, ganhos de produtividade ou economia de tokens.
+- Não criar tarefas gigantes nem exagerar camadas para um MVP.
+- Não sacrificar segurança ou contratos para caber em orçamento de tokens.
+- Não presumir que o registro da CLI constitui prova de execução: logs, Git, CI e demo são evidências externas.
+- Usar uma única fonte canônica para cada contrato ou decisão.
+- O formato legado continua suportado; referências de 1.x não se aplicam automaticamente aos checkpoints de 2.0.
+
+## Arquivos principais
+
+| Caminho | Leitura |
+|---|---|
+| references/fluxo-v2.md | Sprints, mapas, tasks e avaliação |
+| references/contexto-v2.md | Pacotes seletivos, orçamento e invalidação |
+| references/testes-progressivos.md | Testes por task/sprint e cobertura de 80% |
+| references/paralelismo-v2.md | Dependências e agentes isolados |
+| references/design-adaptativo.md | Seleção e revisão de skills de design |
+| references/planejamento-mvp.md | Viabilidade e recorte |
+| assets/v2/ | Modelos de manifestos e memórias |
+| scripts/fluxo.py | Validação, elegibilidade, contexto e evidências |
+| references/fluxo-v1.md | Continuação dos planejamentos legados |
+
+
+---
+
+
+<!-- ═══ references/fluxo-v2.md ═══ -->
+
+# ARQUIVO: references/fluxo-v2.md
+
+# Metodologia 2.0 — sprints, prompts-mapa e tasks
+
+Este é o formato padrão dos novos planejamentos. O fluxo 1.x segue disponível em fluxo-v1.md para projetos legados.
+
+## Hierarquia
+
+- **Sprint:** incremento executável e demonstrável com 1 a 3 prompts (padrão recomendado: 2), encerrado somente após avaliação explícita do humano.
+- **Prompt-mapa:** documento que a pessoa seleciona e entrega ao agente, descrevendo objetivo, tasks e dependências. Não é o contexto de execução inteiro.
+- **Task:** instrução operacional pequena, com contrato, dependências, arquivos de leitura/escrita, critérios verificáveis, testes e orçamento contextual.
+
+O primeiro incremento deve entregar valor real ponta a ponta, não apenas tabelas e arquivos isolados. Login só é a primeira entrega quando o produto realmente precisa disso.
+
+## Sequência
+
+1. Entrevistar e fechar decisões, prazo, recursos, MVP, riscos, contrato e demonstração.
+2. Escolher sprints executáveis, até três prompts-mapa por sprint e tasks por prompt.
+3. Criar docs/especificacao/plano.json, sprints/S01/P01.md, tasks JSON, memória global e por domínio, contratos, README, documento 00 e ESTADO.json na raiz do projeto.
+4. Validar com fluxo.py validar; corrigir erros objetivos e revisar o planejamento semanticamente.
+5. O humano seleciona o mapa. O executor carrega fluxo.py contexto ID, sem receber toda a especificação.
+6. Em cada task, testes locais; após integrar, regressão dos fluxos afetados, cobertura alterada >=80% e demonstração executável.
+7. Parar para avaliação humana; mudanças solicitadas exigem replanejamento dos próximos manifestos e invalidação do contexto afetado.
+8. A cada terceira sprint, e antes quando houver risco alto, rodar suíte completa e verificar cobertura global >=80%.
+
+As evidências de testes e commits registradas em ESTADO.json são **declaradas**, não verificadas automaticamente pela CLI. O integrador deve conferir logs e Git. A CLI não autentica a identidade da pessoa que aprova.
+
+## Compatibilidade
+
+Não migrar automaticamente um projeto 1.x em andamento. A versão anterior usa ESTADO.md e prompts executáveis, validáveis por scripts/validar.py. A versão nova usa ESTADO.json e tasks, validáveis por scripts/fluxo.py. O histórico original permanece preservado.
+
+
+---
+
+
+<!-- ═══ references/contexto-v2.md ═══ -->
+
+# ARQUIVO: references/contexto-v2.md
+
+# Memória seletiva por task
+
+## Regras
+
+A task declara context, reads e writes com caminhos relativos à raiz do projeto. O plano declara global_context. O executor recebe apenas memória global pequena, contexto do domínio, arquivos explicitamente autorizados e descrição da task.
+
+A ferramenta fluxo.py contexto monta o pacote em ordem estável, registra SHA-256 de cada arquivo de origem e estima tokens como caracteres/4. Se ultrapassar context_budget_tokens, recusa sem truncar material importante. Esta estimativa não representa tokens faturáveis de modelos comerciais.
+
+O pacote não deve repetir o repositório inteiro, documentação de domínios estranhos ou logs antigos. Contratos permanecem como fonte canônica; memórias apontam para eles, não criam cópias inconsistentes. Estado de execução fica em ESTADO.json e a prova real é Git + logs.
+
+Mudança em contrato, API, schema ou decisão compartilhada invalida contextos dependentes, que precisam ser refeitos. Quando uma task descobrir dependência inesperada, registre o motivo e atualize seu manifesto antes de prosseguir. Não omita arquivo essencial só para baixar tokens.
+
+Use modelos menores em tarefas fechadas e reserve revisão especializada para decisões complexas. Medir custo total de tokens exige contabilizar tentativas e retrabalho, não apenas tamanho do contexto inicial.
+
+
+---
+
+
+<!-- ═══ references/testes-progressivos.md ═══ -->
+
+# ARQUIVO: references/testes-progressivos.md
+
+# Testes progressivos e checkpoints
+
+A versão 2.0 substitui a suíte completa a cada bloco do fluxo 1.x por testes proporcionais ao impacto.
+
+**Task:** antes de implementar comportamento, escreva o teste local e observe a falha correta. Implemente, rode testes locais, lint, tipagem e build rápidos quando aplicáveis. Registre comandos, resultados e arquivos alterados.
+
+**Sprint:** após integrar as tasks, rode a regressão de todos os fluxos afetados (inclusive fluxos antigos que dependem das alterações), inicie o sistema e demonstre a entrega. Meça cobertura >=80% do código novo ou modificado e registre a ferramenta real utilizada.
+
+**Checkpoint global:** a cada 3 sprints por padrão, no encerramento do projeto e antecipadamente por risco crítico, mudança transversal, autenticação, permissão, esquema compartilhado ou impacto desconhecido, execute a suíte completa e meça cobertura global >=80%.
+
+Testes de segurança, cálculo monetário, isolamento e concorrência não desaparecem quando a cobertura de linhas atinge 80%. Cobertura não é garantia de correção. Se não há medição confiável, registre como pendência em vez de inventar percentual ou aprovar.
+
+A CLI exige evidências declaradas de regressão, demo e cobertura alterada no aceite; em checkpoint também exige suíte completa e cobertura global. Ela não executa os testes do aplicativo, e o integrador deve verificar logs/CI.
+
+Não diminuir o piso para passar, não pular testes e não mascarar falhas. Projeto legado abaixo de 80% precisa de plano de recuperação antes de prometer conformidade.
+
+
+---
+
+
+<!-- ═══ references/paralelismo-v2.md ═══ -->
+
+# ARQUIVO: references/paralelismo-v2.md
+
+# Dependências e agentes paralelos
+
+A CLI lista tasks prontas somente quando as dependências foram concluídas e as sprints anteriores receberam aceite humano.
+
+A seleção parallel_batch evita colisões diretas nos caminhos declarados em writes. Tasks declaradas no mesmo parallel_group com conflito de escrita causam erro de validação. O detector não substitui análise de dependências semânticas.
+
+Execução recomendada: agente integrador escolhe tasks, cria worktrees ou branches isoladas e fornece a cada executor somente seu pacote. Cada executor roda testes locais, registra commit e entrega relatório. O integrador revisa os diffs, faz merge serial, resolve conflitos e é o único responsável por atualizar ESTADO.json.
+
+Contrato precisa estar estabilizado antes de backend e UI trabalharem em paralelo. Se surgirem arquivos compartilhados não previstos, suspenda paralelismo, corrija manifestos e regenere contexto.
+
+A CLI **não lança agentes, não faz merge e não impede um agente de editar arquivos fora de writes**. Para isso são necessárias permissões e isolamento externos. Paralelismo pode reduzir tempo de calendário e aumentar custo de tokens; medir quando for relevante.
+
+
+---
+
+
+<!-- ═══ references/design-adaptativo.md ═══ -->
+
+# ARQUIVO: references/design-adaptativo.md
+
+# Direção de design adaptativa
+
+Antes de gerar tasks de interface, registrar público, dispositivos, navegação principal, referências visuais, estilo, acessibilidade, performance e expectativas do usuário.
+
+Inventariar **skills de design realmente disponíveis** no ambiente em que o agente executará. Selecionar o conjunto mínimo útil com base em UX/UI, stack, acessibilidade, conflitos entre instruções e custo contextual; documentar motivo e fallback quando não existirem skills compatíveis. Não inventar ferramentas instaladas nem prometer beleza objetiva.
+
+Toda task de interface inclui design.review e design.skills_selection, além de contexto de UI; tasks de backend não carregam esses materiais. Revisão final: hierarquia, estados de erro/vazio/carregamento, responsividade, navegação por teclado, foco e contraste. Se puder executar ou capturar a interface, avaliar visualmente; caso contrário, registrar a limitação.
+
+O feedback da sprint atualiza o briefing e as tasks ainda não realizadas. Mudanças visuais exigem testes dos fluxos afetados e novo aceite humano.
+
+
+---
+
+
+<!-- ═══ references/fluxo-v1.md ═══ -->
+
+# ARQUIVO: references/fluxo-v1.md
+
+---
+name: planejamento-de-sistemas
+description: Transforma uma ideia de sistema numa pasta de especificação executável — entrevista o usuário em blocos, fecha as decisões e escreve um documento de visão geral, um índice, prompts numerados prontos para uma IA construir (um por sessão, com critérios de aceite e commit), manuais humanos e registros de decisão (ADRs). Use sempre que o usuário quiser planejar, especificar, documentar ou "mapear" um sistema, produto, API, painel, integração ou módulo novo antes de programar — inclusive quando ele disser "quero criar um sistema que…", "preciso de um plano/PRD/especificação", "me ajuda a organizar como construir isso", "quero gerar os prompts para o Claude Code construir X", ou quando pedir uma funcionalidade grande dentro de um repositório que já existe. Use também para revisar, completar ou reescrever um planejamento que já existe nesse formato.
+---
+
 # Planejamento de sistemas
 
 Esta skill produz **especificação executável**: uma pasta de documentos que basta entregar a uma IA
@@ -1307,6 +1521,23 @@ Continua sendo o contrato entre os prompts, mas ganha duas seções e perde peso
 
 # ARQUIVO: references/qualidade.md
 
+# Revisão de qualidade
+
+## Fluxo 2.0 (padrão)
+
+- [ ] Sprint contém entrega ponta a ponta, comando de demonstração, regressão afetada e gate humano.
+- [ ] Prompt descreve mapa para pessoa; task descreve execução para agente, com instruções sem ambiguidade.
+- [ ] Existem de 1 a 3 prompts por sprint, com tasks dependentes explícitas, escrita autorizada e testes locais.
+- [ ] Memória seletiva fornece somente contexto da task e contratos canônicos. Alteração de contrato invalida os pacotes dependentes.
+- [ ] A escolha de skills de design usa apenas opções efetivamente disponíveis, com revisão visual da interface.
+- [ ] Durante tasks, testes rápidos; ao fim da sprint, regressão afetada e cobertura alterada medida >=80%.
+- [ ] A cada 3 sprints e conforme risco, suíte completa e cobertura global >=80%.
+- [ ] Tasks paralelas não disputam arquivos. Integração serial e aprovação humana obrigatória.
+- [ ] fluxo.py validar foi executado e retornou zero erros, sem fingir verificação semântica.
+- [ ] Não há afirmação de tokens poupados sem medição, nem de aplicativo executado sem teste real.
+
+## Fluxo 1.x (legado)
+
 # Revisão final do conjunto
 
 Passe por esta lista antes de entregar. Ela é feita do que costuma faltar — e o custo de cada falha
@@ -2101,6 +2332,179 @@ O que foi decidido, na voz ativa e no presente: "o sistema usa…", "o campo X p
 
 O que passa a ser verdade depois da decisão — o bom e o ruim. Inclua o que precisa ser revisto mais
 tarde e o que os outros prompts da especificação precisam saber.
+
+
+---
+
+
+<!-- ═══ assets/v2/plano.json ═══ -->
+
+# ARQUIVO: assets/v2/plano.json
+
+{
+  "schema_version": "2.0",
+  "product": "NOME_DO_PRODUTO",
+  "human_gate": true,
+  "coverage_min": 80,
+  "full_suite_every": 3,
+  "global_context": [
+    "docs/especificacao/memoria/global.md"
+  ],
+  "sprints": [
+    {
+      "id": "S01",
+      "title": "Primeiro fluxo de valor",
+      "delivery": "Fluxo utilizável e demonstrável",
+      "demo_command": "COMANDO_LOCAL",
+      "regression_tests": [
+        "COMANDO_TESTES_AFETADOS"
+      ],
+      "risk": "low",
+      "requires_full_suite": false,
+      "prompts": [
+        {
+          "id": "P01",
+          "map": "sprints/S01/P01.md",
+          "tasks": [
+            "sprints/S01/tasks/T01.json"
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+---
+
+
+<!-- ═══ assets/v2/task.json ═══ -->
+
+# ARQUIVO: assets/v2/task.json
+
+{
+  "id": "S01-P01-T01",
+  "kind": "backend",
+  "instruction": "Objetivo técnico concreto",
+  "result": "Código e teste verificáveis",
+  "depends_on": [],
+  "context": [
+    "docs/especificacao/memoria/dominio.md"
+  ],
+  "reads": [],
+  "writes": [
+    "src/modulo.py"
+  ],
+  "tests": [
+    "COMANDO_TESTES_LOCAIS"
+  ],
+  "acceptance": [
+    "Condição verificável da entrega"
+  ],
+  "context_budget_tokens": 2500
+}
+
+
+---
+
+
+<!-- ═══ assets/v2/ESTADO.json ═══ -->
+
+# ARQUIVO: assets/v2/ESTADO.json
+
+{
+  "schema_version": "2.0",
+  "tasks": {
+    "S01-P01-T01": {
+      "status": "pendente"
+    }
+  },
+  "sprints": {
+    "S01": {
+      "status": "pendente",
+      "human_approved": false
+    }
+  }
+}
+
+
+---
+
+
+<!-- ═══ assets/v2/SPRINT.md ═══ -->
+
+# ARQUIVO: assets/v2/SPRINT.md
+
+# S01 — Primeira entrega utilizável
+
+## Valor e viabilidade
+Que fluxo o usuário poderá executar? Qual o prazo e recursos?
+
+## Demonstração
+Comando local, dados fictícios, roteiro para pessoa testar, critérios de aceite.
+
+## Mapas
+| Mapa | Tasks | Dependências | Entrega |
+|---|---|---|---|
+| P01 | S01-P01-T01 | — | Resultado observável |
+
+## Qualidade
+Testes locais por task, regressão afetada por sprint, cobertura alterada >=80%.
+Suíte completa e cobertura global >=80% em checkpoint ou risco elevado.
+Aguardar aprovação humana após demonstração.
+
+
+---
+
+
+<!-- ═══ assets/v2/PROMPT_MAPA.md ═══ -->
+
+# ARQUIVO: assets/v2/PROMPT_MAPA.md
+
+# P01 — Mapa humano da Sprint S01
+
+Objetivo do incremento: resultado executável e visível ao usuário.
+
+Tasks: S01-P01-T01, S01-P01-T02. Informar ordem, dependências, risco e possibilidade de paralelismo somente com contratos definidos.
+
+O humano seleciona este mapa. O agente executa cada task liberada a partir do pacote retornado por fluxo.py contexto ID. Não passar o projeto inteiro para cada executor.
+
+Ao integrar: verificar testes dos fluxos afetados, cobertura e demonstrar o sistema. Solicitar feedback e pausar antes da próxima sprint.
+
+
+---
+
+
+<!-- ═══ assets/v2/memoria-global.md ═══ -->
+
+# ARQUIVO: assets/v2/memoria-global.md
+
+# Memória global (minimizar)
+
+Objetivo: descrição curta do produto.
+Invariantes: regras universais verificáveis, segurança e privacidade.
+Contratos canônicos: links relativos para fonte de verdade.
+Convenções mínimas: idioma, stack e organização.
+
+Não copiar domínios inteiros, histórico de conversa, credenciais ou logs antigos.
+
+
+---
+
+
+<!-- ═══ assets/v2/memoria-dominio.md ═══ -->
+
+# ARQUIVO: assets/v2/memoria-dominio.md
+
+# Memória do domínio
+
+Responsabilidade do domínio e fluxos envolvidos.
+Contratos e decisões canônicos por caminho, sem cópias conflitantes.
+Regras de negócio verificáveis e limites.
+Testes locais e fluxos dependentes.
+Diretórios permitidos e dependências compartilhadas.
+
+Se mudar contrato, atualizar tasks e regenerar contextos.
 
 
 ---
