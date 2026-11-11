@@ -1,0 +1,31 @@
+{
+  "id": "S01-P02-T01",
+  "depends_on": [
+    "S01-P01-T01"
+  ],
+  "writes": [
+    "src/ui/login.py",
+    "tests/test_ui.py"
+  ],
+  "reads": [],
+  "context": [
+    "docs/especificacao/memoria/ui.md",
+    "docs/especificacao/contratos/login.md"
+  ],
+  "tests": [
+    "python3 -m unittest tests.test_ui -v"
+  ],
+  "acceptance": [
+    "Campos rotulados",
+    "Erro contextual visível",
+    "Navegação por teclado funcional"
+  ],
+  "instruction": "Construir tela de login com estados de carregamento e erro, rótulos acessíveis e layout responsivo conforme contrato. Integrar via interface do contrato; não alterar serviço.",
+  "result": "Tela interativa de login pronta para integração.",
+  "context_budget_tokens": 3000,
+  "kind": "interface",
+  "design": {
+    "review": "Inspecionar navegação, responsividade, contraste, estados e hierarquia, com captura de tela se ferramenta permitir",
+    "skills_selection": "Inventariar skills instaladas, justificar a seleção por UI/stack/acessibilidade e documentar fallback caso não haja skill"
+  }
+}

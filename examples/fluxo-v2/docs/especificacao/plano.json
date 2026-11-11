@@ -1,0 +1,41 @@
+{
+  "schema_version": "2.0",
+  "product": "Exemplo de login incremental",
+  "human_gate": true,
+  "coverage_min": 80,
+  "full_suite_every": 3,
+  "global_context": [
+    "docs/especificacao/memoria/global.md"
+  ],
+  "sprints": [
+    {
+      "id": "S01",
+      "title": "Login funcional",
+      "delivery": "Tela de login conectada à autenticação, executável e avaliável pelo humano.",
+      "demo_command": "python3 -m src.app",
+      "regression_tests": [
+        "python3 -m unittest tests.test_contrato tests.test_auth tests.test_ui tests.test_login_flow -v"
+      ],
+      "risk": "moderate",
+      "requires_full_suite": false,
+      "prompts": [
+        {
+          "id": "P01",
+          "map": "sprints/S01/P01.md",
+          "tasks": [
+            "sprints/S01/tasks/T01.json",
+            "sprints/S01/tasks/T02.json"
+          ]
+        },
+        {
+          "id": "P02",
+          "map": "sprints/S01/P02.md",
+          "tasks": [
+            "sprints/S01/tasks/T03.json",
+            "sprints/S01/tasks/T04.json"
+          ]
+        }
+      ]
+    }
+  ]
+}

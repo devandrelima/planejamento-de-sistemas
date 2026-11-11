@@ -1,0 +1,23 @@
+{
+  "schema_version": "2.0",
+  "tasks": {
+    "S01-P01-T01": {
+      "status": "pendente"
+    },
+    "S01-P01-T02": {
+      "status": "pendente"
+    },
+    "S01-P02-T01": {
+      "status": "pendente"
+    },
+    "S01-P02-T02": {
+      "status": "pendente"
+    }
+  },
+  "sprints": {
+    "S01": {
+      "status": "pendente",
+      "human_approved": false
+    }
+  }
+}

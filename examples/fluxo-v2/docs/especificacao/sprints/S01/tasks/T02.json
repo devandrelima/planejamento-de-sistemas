@@ -1,0 +1,27 @@
+{
+  "id": "S01-P01-T02",
+  "depends_on": [
+    "S01-P01-T01"
+  ],
+  "writes": [
+    "src/auth/servico.py",
+    "tests/test_auth.py"
+  ],
+  "reads": [],
+  "context": [
+    "docs/especificacao/memoria/auth.md",
+    "docs/especificacao/contratos/login.md"
+  ],
+  "tests": [
+    "python3 -m unittest tests.test_auth -v"
+  ],
+  "acceptance": [
+    "Credencial válida autentica",
+    "Credencial inválida não autentica",
+    "Dados sensíveis não aparecem nos logs"
+  ],
+  "instruction": "Implementar validação de senha e sessão local conforme contrato. Criar testes primeiro; não mexer na interface. Nunca gravar senha em texto puro.",
+  "result": "Serviço de autenticação executável com falhas e sucessos testados.",
+  "context_budget_tokens": 3000,
+  "kind": "backend"
+}

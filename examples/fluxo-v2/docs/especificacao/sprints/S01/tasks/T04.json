@@ -1,0 +1,29 @@
+{
+  "id": "S01-P02-T02",
+  "depends_on": [
+    "S01-P01-T02",
+    "S01-P02-T01"
+  ],
+  "writes": [
+    "src/app.py",
+    "tests/test_login_flow.py"
+  ],
+  "reads": [],
+  "context": [
+    "docs/especificacao/memoria/auth.md",
+    "docs/especificacao/memoria/ui.md",
+    "docs/especificacao/contratos/login.md"
+  ],
+  "tests": [
+    "python3 -m unittest tests.test_login_flow -v"
+  ],
+  "acceptance": [
+    "Login completo é utilizável",
+    "Fluxo inválido mostra erro sem revelar dados",
+    "Aplicação inicia localmente com comando documentado"
+  ],
+  "instruction": "Integrar tela e serviço conforme contrato; iniciar o sistema localmente e exercitar login válido e inválido. Não adicionar cadastro ou recuperação de senha.",
+  "result": "Fluxo demonstrável ponta a ponta, com roteiro de avaliação humana.",
+  "context_budget_tokens": 3000,
+  "kind": "integration"
+}

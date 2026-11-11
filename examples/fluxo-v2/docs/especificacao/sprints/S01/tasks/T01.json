@@ -1,0 +1,24 @@
+{
+  "id": "S01-P01-T01",
+  "depends_on": [],
+  "writes": [
+    "src/auth/contrato.py"
+  ],
+  "reads": [],
+  "context": [
+    "docs/especificacao/memoria/auth.md",
+    "docs/especificacao/contratos/login.md"
+  ],
+  "tests": [
+    "python3 -m unittest tests.test_contrato -v"
+  ],
+  "acceptance": [
+    "Campos, códigos e erros do contrato seguem o documento",
+    "Nenhum segredo hardcoded",
+    "Testes de contrato verdes"
+  ],
+  "instruction": "Definir interfaces LoginRequest, LoginResult e erros do login conforme contrato; criar os testes das invariantes antes do código. Não implementar endpoint nem interface.",
+  "result": "Contrato interno versionado e testes para validação de dados.",
+  "context_budget_tokens": 3000,
+  "kind": "backend"
+}
