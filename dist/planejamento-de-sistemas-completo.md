@@ -134,6 +134,11 @@ As evidências de testes e commits registradas em ESTADO.json são **declaradas*
 Não migrar automaticamente um projeto 1.x em andamento. A versão anterior usa ESTADO.md e prompts executáveis, validáveis por scripts/validar.py. A versão nova usa ESTADO.json e tasks, validáveis por scripts/fluxo.py. O histórico original permanece preservado.
 
 
+## Replanejamento com feedback
+
+Depois de registrar ajustes, acrescente novas tasks ao manifesto e use o comando fluxo.py sincronizar para incluir apenas os novos IDs em ESTADO.json. O comando conserva evidências das tasks existentes, recusa eliminação silenciosa de IDs e proíbe acrescentar tasks a sprints aprovadas. Faça a atualização de documentos e o estado no mesmo conjunto de commits revisados. A ferramenta não resolve sozinha conflitos semânticos nem altera contratos sem decisão.
+
+
 ---
 
 
