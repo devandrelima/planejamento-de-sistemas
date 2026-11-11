@@ -14,6 +14,7 @@ A metodologia anterior 1.x segue disponível para planos já gerados. O foco da 
     python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 validar
     python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 prontas
     python3 skills/planejamento-de-sistemas/scripts/fluxo.py --repo examples/fluxo-v2 contexto S01-P01-T01
+    # Depois de acrescentar tasks a um plano existente: comando sincronizar
     ./build.sh
 
 ### Funcionamento

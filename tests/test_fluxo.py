@@ -81,6 +81,38 @@ class FlowV2Tests(unittest.TestCase):
     def finish(self, tid):
         self.project().finish_task(tid, "abc1234", "teste unitário executado e conferido")
 
+    def test_sync_adds_new_task_without_erasing_old_evidence(self):
+        self.finish("S01-P01-T01")
+        fresh = self.task("S01-P02-T03", ["S01-P02-T02"], ["src/ajuste.py"],
+                          "docs/especificacao/memoria/ui.md")
+        self.tasks[fresh["id"]] = fresh
+        self.write_plan()
+        # Recreate the previously recorded completion as it would exist on disk.
+        state = json.loads((self.repo / "ESTADO.json").read_text())
+        state["tasks"]["S01-P01-T01"] = {"status": "concluida", "commit": "abc1234", "evidence": "passou"}
+        state["tasks"].pop(fresh["id"])
+        self.put("ESTADO.json", json.dumps(state))
+        plan = json.loads((self.spec / "plano.json").read_text())
+        plan["sprints"][0]["prompts"][1]["tasks"].append("tasks/T05.json")
+        self.put("docs/especificacao/tasks/T05.json", json.dumps(fresh))
+        self.put("docs/especificacao/plano.json", json.dumps(plan))
+        project = self.project()
+        self.assertIn("sem estado válido", " ".join(project.validate()))
+        self.assertEqual(project.synchronize(), ["S01-P02-T03"])
+        self.assertEqual(self.project().validate(), [])
+        self.assertEqual(self.project().state["tasks"]["S01-P01-T01"]["commit"], "abc1234")
+
+    def test_unknown_task_is_not_deleted_by_sync(self):
+        state = json.loads((self.repo / "ESTADO.json").read_text())
+        state["tasks"]["S01-P99-T99"] = {"status": "concluida", "commit": "abc1234", "evidence": "existe"}
+        self.put("ESTADO.json", json.dumps(state))
+        with self.assertRaisesRegex(flow.PlanError, "Task antiga removida"):
+            self.project().synchronize()
+
+    def test_missing_global_memory_fails_validation(self):
+        (self.repo / "docs/especificacao/memoria/global.md").unlink()
+        self.assertIn("global_context:", " ".join(self.project().validate()))
+
     def test_valid_plan(self):
         self.assertEqual(self.project().validate(), [])
 

@@ -93,6 +93,12 @@ class Project:
             self._issue("full_suite_every deve ser inteiro positivo")
         if not nonempty_list(self.plan.get("global_context")):
             self._issue("global_context deve conter arquivos globais")
+        else:
+            for name in self.plan["global_context"]:
+                try:
+                    read_required(self.repo, name)
+                except PlanError as exc:
+                    self._issue(f"global_context: {exc}")
         if not isinstance(self.sprints, list) or not self.sprints:
             self._issue("sprints deve conter pelo menos uma sprint")
             return
@@ -227,6 +233,8 @@ class Project:
         issues = self.issues.copy()
         if self.state.get("schema_version") != "2.0":
             issues.append("ESTADO.json: schema_version inválido")
+        for unknown in set(self.state.get("tasks", {})) - set(self.tasks):
+            issues.append(f"ESTADO.json: task órfã não pode ser descartada: {unknown}")
         for tid in self.tasks:
             entry = self.state.get("tasks", {}).get(tid)
             if not isinstance(entry, dict) or entry.get("status") not in ("pendente", "concluida"):
@@ -248,6 +256,28 @@ class Project:
         problems = self.validate()
         if problems:
             raise PlanError("Plano inválido:\n- " + "\n- ".join(problems))
+
+    def synchronize(self) -> list[str]:
+        """Register new tasks from a replan, preserving historical completion evidence."""
+        if self.issues:
+            raise PlanError("Plano estruturalmente inválido; não sincronizar")
+        for tid in self.state.get("tasks", {}):
+            if tid not in self.tasks:
+                raise PlanError(f"Task antiga removida do plano: {tid}; preserve histórico e registre decisão")
+        added: list[str] = []
+        for sprint in self.sprints:
+            sid = sprint["id"]
+            entry = self.state.setdefault("sprints", {}).setdefault(
+                sid, {"status": "pendente", "human_approved": False})
+            new = [tid for tid in self.task_order
+                   if self.task_sprint[tid] == sid and tid not in self.state.get("tasks", {})]
+            if new and entry.get("human_approved"):
+                raise PlanError(f"Não incluir tasks na sprint já aprovada: {sid}")
+            for tid in new:
+                self.state.setdefault("tasks", {})[tid] = {"status": "pendente"}
+                added.append(tid)
+        self.save()
+        return added
 
     def pending_sprint(self) -> dict | None:
         for sprint in self.sprints:
@@ -360,6 +390,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--spec", default="docs/especificacao", help="Especificação relativa ao projeto")
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("validar")
+    sub.add_parser("sincronizar")
     sub.add_parser("prontas")
     ctx = sub.add_parser("contexto")
     ctx.add_argument("task")
@@ -383,6 +414,10 @@ def main(argv: list[str] | None = None) -> int:
             problems = project.validate()
             print(json.dumps({"errors": len(problems), "findings": problems}, ensure_ascii=False, indent=2))
             return int(bool(problems))
+        if args.command == "sincronizar":
+            added = project.synchronize()
+            print(json.dumps({"added": added, "errors": project.validate()}, ensure_ascii=False, indent=2))
+            return int(bool(project.validate()))
         if args.command == "prontas":
             print(json.dumps(project.ready(), ensure_ascii=False, indent=2))
         if args.command == "contexto":
