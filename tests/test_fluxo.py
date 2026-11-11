@@ -98,6 +98,7 @@ class FlowV2Tests(unittest.TestCase):
         self.put("docs/especificacao/plano.json", json.dumps(plan))
         project = self.project()
         self.assertIn("sem estado válido", " ".join(project.validate()))
+        self.assertEqual(project.issues, [])
         self.assertEqual(project.synchronize(), ["S01-P02-T03"])
         self.assertEqual(self.project().validate(), [])
         self.assertEqual(self.project().state["tasks"]["S01-P01-T01"]["commit"], "abc1234")
