@@ -1,0 +1,32 @@
+{
+  "schema_version": "2.0",
+  "product": "NOME_DO_PRODUTO",
+  "human_gate": true,
+  "coverage_min": 80,
+  "full_suite_every": 3,
+  "global_context": [
+    "docs/especificacao/memoria/global.md"
+  ],
+  "sprints": [
+    {
+      "id": "S01",
+      "title": "Primeiro fluxo de valor",
+      "delivery": "Fluxo utilizável e demonstrável",
+      "demo_command": "COMANDO_LOCAL",
+      "regression_tests": [
+        "COMANDO_TESTES_AFETADOS"
+      ],
+      "risk": "low",
+      "requires_full_suite": false,
+      "prompts": [
+        {
+          "id": "P01",
+          "map": "sprints/S01/P01.md",
+          "tasks": [
+            "sprints/S01/tasks/T01.json"
+          ]
+        }
+      ]
+    }
+  ]
+}

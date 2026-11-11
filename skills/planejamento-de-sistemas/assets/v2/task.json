@@ -1,0 +1,21 @@
+{
+  "id": "S01-P01-T01",
+  "kind": "backend",
+  "instruction": "Objetivo técnico concreto",
+  "result": "Código e teste verificáveis",
+  "depends_on": [],
+  "context": [
+    "docs/especificacao/memoria/dominio.md"
+  ],
+  "reads": [],
+  "writes": [
+    "src/modulo.py"
+  ],
+  "tests": [
+    "COMANDO_TESTES_LOCAIS"
+  ],
+  "acceptance": [
+    "Condição verificável da entrega"
+  ],
+  "context_budget_tokens": 2500
+}
